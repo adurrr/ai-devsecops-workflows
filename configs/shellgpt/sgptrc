@@ -1,0 +1,43 @@
+# ShellGPT Configuration for DevSecOps
+# Place at: ~/.config/shell_gpt/.sgptrc
+
+[default]
+# Security: Never auto-execute commands
+DEFAULT_EXECUTE_SHELL_CMD=false
+
+# Cache settings
+CACHE_LENGTH=100
+CACHE_PATH=~/.cache/shell_gpt
+
+# Output formatting
+DEFAULT_COLOR=auto
+OS_NAME=auto
+SHELL_INTERACTION=true
+
+# API settings (use environment variables, not hardcoded)
+# OPENAI_API_KEY should be set in environment
+OPENAI_API_HOST=https://api.openai.com
+DEFAULT_MODEL=gpt-5.4-mini
+DEFAULT_temperature=0.1
+
+# Functions (disable for security)
+OPENAI_FUNCTIONS=false
+USE_LITELLM=false
+
+# Role storage
+ROLE_STORAGE_PATH=~/.config/shell_gpt/roles/
+
+# Editor
+EDITOR=vim
+
+# Logging (for audit)
+LOG_FILE=~/.local/share/shell_gpt/history.log
+LOG_LEVEL=INFO
+
+[shell]
+SHELL_INTERACTION=true
+SHELL_NAME=bash
+
+[chat]
+CHAT_CACHE_LENGTH=100
+CHAT_CACHE_PATH=~/.cache/shell_gpt/chat_cache

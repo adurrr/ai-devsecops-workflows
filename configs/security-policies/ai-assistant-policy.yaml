@@ -1,0 +1,369 @@
+# =============================================================================
+# AI Assistant Security Policies
+# =============================================================================
+# These policies govern AI assistant behavior across all paradigms
+# Implement as code, configuration, or organizational policy
+# =============================================================================
+
+policy_version: "1.0.0"
+effective_date: "2024-01-01"
+review_cycle: "quarterly"
+
+# =============================================================================
+# 1. DATA CLASSIFICATION & HANDLING
+# =============================================================================
+
+data_classification:
+  public:
+    description: "Can be shared with any AI model"
+    examples:
+      - Public documentation
+      - Open source code
+      - Public API schemas
+    ai_usage: allowed
+    
+  internal:
+    description: "Use judgment before sharing"
+    examples:
+      - Architecture diagrams
+      - Non-sensitive configs
+      - General codebase
+    ai_usage: allowed_with_review
+    approved_providers:
+      - openai
+      - anthropic
+      - google
+      
+  confidential:
+    description: "Requires local models or air-gapped environments"
+    examples:
+      - Production credentials
+      - Customer data
+      - Security configurations
+    ai_usage: local_only
+    approved_providers:
+      - ollama
+      - lmstudio
+      - localai
+      
+  restricted:
+    description: "No AI assistant access"
+    examples:
+      - Private keys
+      - Master passwords
+      - Unencrypted PII
+    ai_usage: prohibited
+
+# =============================================================================
+# 2. COMMAND EXECUTION CONTROLS
+# =============================================================================
+
+command_execution:
+  default_policy: review_required
+  
+  auto_blocked_patterns:
+    - "rm -rf /"
+    - "rm -rf /*"
+    - "mkfs\."
+    - "dd if=/dev/zero"
+    - "> /dev/sda"
+    - "chmod -R 777 /"
+    - "curl.*\|.*sh"
+    - "wget.*\|.*sh"
+    
+  require_approval_for:
+    - pattern: "kubectl delete"
+      reason: "Destructive Kubernetes operations"
+      approvers: [sre_team]
+      
+    - pattern: "terraform destroy"
+      reason: "Infrastructure destruction"
+      approvers: [platform_team, security_team]
+      
+    - pattern: "aws ec2 terminate-instances"
+      reason: "Instance termination"
+      approvers: [sre_team]
+      
+    - pattern: "DROP DATABASE"
+      reason: "Database deletion"
+      approvers: [dba_team, security_team]
+      
+    - pattern: "REVOKE.*GRANT"
+      reason: "Permission changes"
+      approvers: [security_team]
+
+# =============================================================================
+# 3. AGENT PERMISSION MODELS
+# =============================================================================
+
+agent_permissions:
+  # Read-only agents for reconnaissance
+  reconnaissance:
+    allowed_tools:
+      - view
+      - read
+      - grep
+      - glob
+      - ls
+    blocked_tools:
+      - write
+      - edit
+      - execute
+      - delete
+    max_file_size: "10MB"
+    session_timeout: "30m"
+    
+  # Analysis agents for review and assessment
+  analysis:
+    allowed_tools:
+      - view
+      - read
+      - grep
+      - glob
+      - ls
+    blocked_tools:
+      - write
+      - edit
+      - execute
+      - delete
+    max_file_size: "50MB"
+    session_timeout: "2h"
+    
+  # Remediation agents for implementing fixes
+  remediation:
+    allowed_tools:
+      - view
+      - read
+      - grep
+      - glob
+      - ls
+      - write
+      - edit
+    blocked_tools:
+      - execute
+      - delete
+    require_approval_for:
+      - write
+      - edit
+    max_file_size: "5MB"
+    session_timeout: "4h"
+    change_limit: 50  # max files per session
+    
+  # Emergency agents for incident response
+  emergency:
+    allowed_tools:
+      - all
+    blocked_tools: []
+    require_approval_for:
+      - execute
+      - delete
+    approvers: [incident_commander]
+    session_timeout: "8h"
+    audit_level: comprehensive
+
+# =============================================================================
+# 4. AUDIT & LOGGING REQUIREMENTS
+# =============================================================================
+
+audit_logging:
+  enabled: true
+  level: comprehensive  # basic, detailed, comprehensive
+  
+  logged_events:
+    - session_start
+    - session_end
+    - prompt_submitted
+    - response_received
+    - tool_invocation
+    - file_access
+    - command_execution
+    - permission_check
+    - approval_request
+    - approval_response
+    
+  retention:
+    security_sessions: 1_year
+    production_sessions: 90_days
+    development_sessions: 30_days
+    
+  encryption:
+    at_rest: aes-256
+    in_transit: tls-1.3
+    
+  access_controls:
+    - role: security_team
+      permissions: [read, export]
+    - role: compliance_team
+      permissions: [read, export]
+    - role: engineer
+      permissions: [read_own]
+
+# =============================================================================
+# 5. MODEL PROVIDER APPROVAL
+# =============================================================================
+
+approved_providers:
+  tier_1_enterprise:
+    - openai
+    - anthropic
+    - google
+    - azure_openai
+    - aws_bedrock
+    data_handling: internal_and_below
+    
+  tier_2_standard:
+    - cerebras
+    - fireworks
+    - together
+    data_handling: public_only
+    
+  tier_3_local:
+    - ollama
+    - lmstudio
+    - localai
+    - text_generation_webui
+    data_handling: all_classifications
+    
+prohibited_providers:
+  - unknown_providers
+  - non_compliant_apis
+  - unvetted_open_source
+
+# =============================================================================
+# 6. SECRET DETECTION & PREVENTION
+# =============================================================================
+
+secret_detection:
+  enabled: true
+  mode: block_and_alert
+  
+  patterns:
+    # API Keys
+    - name: aws_access_key
+      pattern: "AKIA[0-9A-Z]{16}"
+      severity: critical
+      
+    - name: generic_api_key
+      pattern: "[a-zA-Z_]+_API_KEY.*['\"][a-zA-Z0-9]{20,}['\"]"
+      severity: critical
+      
+    - name: private_key
+      pattern: "-----BEGIN (RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----"
+      severity: critical
+      
+    - name: password_in_code
+      pattern: "password\s*=\s*['\"][^'\"]+['\"]"
+      severity: high
+      
+    - name: database_url
+      pattern: "(postgres|mysql|mongodb)://[^:]+:[^@]+@"
+      severity: high
+      
+  actions:
+    detect: log
+    block: true
+    alert: security_team
+    scan_context: true
+    scan_history: true
+
+# =============================================================================
+# 7. PROMPT INJECTION PROTECTION
+# =============================================================================
+
+prompt_injection:
+  enabled: true
+  
+  detection_patterns:
+    - "ignore previous instructions"
+    - "disregard (the )?(above|prior)"
+    - "you are now"
+    - "new role:"
+    - "system override"
+    - "DAN mode"
+    - "jailbreak"
+    
+  response_actions:
+    - block_request: true
+    - log_incident: true
+    - alert_security: true
+    - quarantine_session: true
+
+# =============================================================================
+# 8. COMPLIANCE MAPPINGS
+# =============================================================================
+
+compliance_mappings:
+  soc2:
+    cc6.1: "Logical access controls - agent permissions"
+    cc6.2: "Access removal - session timeouts"
+    cc6.3: "Access reviews - audit logs"
+    cc7.1: "Security monitoring - detection rules"
+    cc7.2: "Incident detection - alerting"
+    
+  iso27001:
+    a9.1.1: "Access control policy - agent permissions"
+    a9.2.1: "User registration - session tracking"
+    a9.4.1: "Information access restriction - data classification"
+    a12.3: "Backup - session persistence"
+    a16.1: "Incident management - response procedures"
+    
+  nist_csf:
+    pr.ac: "Access control - permission models"
+    pr.pt: "Protective technology - secret detection"
+    de.cm: "Continuous monitoring - audit logging"
+    rs.an: "Analysis - incident response"
+
+# =============================================================================
+# 9. INCIDENT RESPONSE PROCEDURES
+# =============================================================================
+
+incident_response:
+  detection:
+    - automated_scanning
+    - user_reporting
+    - audit_anomaly_detection
+    
+  response_levels:
+    level_1_suspicious:
+      trigger: "Unusual pattern detected"
+      action: "Enhanced monitoring"
+      notification: "Security team"
+      
+    level_2_confirmed:
+      trigger: "Secret exposed or injection detected"
+      action: "Session termination, credential rotation"
+      notification: "Security + Engineering leads"
+      
+    level_3_breach:
+      trigger: "Confirmed data exfiltration"
+      action: "Full incident response, forensic preservation"
+      notification: "CISO, Legal, Communications"
+
+# =============================================================================
+# 10. TRAINING & AWARENESS
+# =============================================================================
+
+training_requirements:
+  initial:
+    - ai_security_fundamentals
+    - prompt_injection_awareness
+    - data_classification_guidelines
+    - incident_reporting_procedures
+    
+  recurring:
+    - quarterly_security_updates
+    - annual_policy_review
+    - incident_lessons_learned
+    
+  role_specific:
+    engineers:
+      - secure_coding_with_ai
+      - code_review_checklist
+      
+    security_team:
+      - threat_modeling_ai
+      - incident_response_advanced
+      
+    leadership:
+      - ai_risk_management
+      - compliance_requirements

@@ -1,0 +1,171 @@
+{
+  "$schema": "https://raw.githubusercontent.com/alvinunreal/oh-my-opencode-slim/main/schema.json",
+  "version": "1.0.0",
+  "description": "DevSecOps-optimized configuration for oh-my-opencode-slim",
+  
+  "orchestrator": {
+    "model": "openai/gpt-5.4",
+    "temperature": 0.3,
+    "system_prompt": "You are a DevSecOps orchestrator. Route security tasks to appropriate agents, enforce least privilege, and ensure all security changes are audited. Never auto-execute destructive operations."
+  },
+
+  "agents": {
+    "explorer": {
+      "model": "cerebras/zai-glm-4.7",
+      "temperature": 0.1,
+      "system_prompt": "You are a security-focused codebase explorer. Map attack surfaces, find secrets, inventory IaC resources. Be thorough but fast. Report findings in structured format.",
+      "max_tokens": 4000,
+      "tools": ["view", "ls", "grep", "glob"],
+      "blocked_paths": [
+        "*.pem",
+        "*.key",
+        ".env*",
+        "secrets/",
+        "~/.aws/",
+        "~/.ssh/",
+        "~/.kube/config"
+      ]
+    },
+
+    "librarian": {
+      "model": "openai/gpt-5.4-mini",
+      "temperature": 0.1,
+      "system_prompt": "You are a security research librarian. Fetch CVEs, compliance requirements, and threat intelligence. Always cite sources and provide confidence levels.",
+      "mcp_servers": ["security-advisories", "nvd-api", "mitre-attack"],
+      "cache_ttl": 3600
+    },
+
+    "oracle": {
+      "model": "openai/gpt-5.4 (high)",
+      "temperature": 0.2,
+      "system_prompt": "You are a senior security architect. Provide strategic security guidance, assess risk, and review architectures. Be conservative in risk acceptance. Document all assumptions.",
+      "max_tokens": 8000,
+      "tools": ["view", "read", "grep"],
+      "require_approval_for": ["security-acceptance", "risk-acceptance"]
+    },
+
+    "fixer": {
+      "model": "fireworks-ai/accounts/fireworks/routers/kimi-k2p5-turbo",
+      "temperature": 0.1,
+      "system_prompt": "You are a security remediation engineer. Fix vulnerabilities safely. Prefer non-breaking changes. Test fixes when possible. Never introduce new vulnerabilities.",
+      "tools": ["view", "read", "edit", "write", "bash"],
+      "blocked_tools": ["execute", "delete"],
+      "require_approval_for": ["edit", "write", "bash"],
+      "auto_test": true
+    },
+
+    "designer": {
+      "model": "openai/gpt-5.4-mini",
+      "temperature": 0.4,
+      "system_prompt": "You are a security UI/UX designer. Create dashboards, documentation, and security interfaces. Focus on clarity and actionability.",
+      "tools": ["view", "write"]
+    },
+
+    "council": {
+      "models": [
+        "openai/gpt-5.4",
+        "anthropic/claude-3.5-sonnet",
+        "google/gemini-1.5-pro"
+      ],
+      "consensus_threshold": 0.66,
+      "system_prompt": "You are a security council. Validate critical security decisions. Flag disagreements. Require unanimous consent for high-risk acceptance.",
+      "use_for": ["risk-assessment", "compliance-validation", "incident-severity"]
+    }
+  },
+
+  "security": {
+    "mode": "strict",
+    "read_only_default": true,
+    "max_file_size": "1MB",
+    "blocked_extensions": [
+      ".pem", ".key", ".p12", ".pfx",
+      ".env", ".env.local", ".env.production"
+    ],
+    "blocked_patterns": [
+      "password.*=.*",
+      "secret.*=.*",
+      "token.*=.*",
+      "private_key.*=.*"
+    ],
+    "audit_logging": {
+      "enabled": true,
+      "level": "detailed",
+      "destination": "~/.local/share/opencode/audit/",
+      "include_context": false,
+      "retention_days": 90
+    },
+    "prompt_injection_detection": true,
+    "secret_detection": true
+  },
+
+  "workflows": {
+    "security-audit": {
+      "description": "Full security audit workflow",
+      "steps": [
+        { "agent": "explorer", "task": "map attack surface" },
+        { "agent": "librarian", "task": "research current threats" },
+        { "agent": "oracle", "task": "assess risk and prioritize" },
+        { "agent": "fixer", "task": "remediate auto-fixable issues" },
+        { "agent": "council", "task": "validate high-risk findings" }
+      ]
+    },
+    
+    "incident-response": {
+      "description": "Security incident response",
+      "steps": [
+        { "agent": "explorer", "task": "immediate reconnaissance", "priority": "p0" },
+        { "agent": "librarian", "task": "research attack vectors", "priority": "p0" },
+        { "agent": "oracle", "task": "strategic response plan", "priority": "p0" },
+        { "agent": "fixer", "task": "execute containment", "priority": "p0", "require_approval": true },
+        { "agent": "designer", "task": "document incident", "priority": "p1" }
+      ]
+    },
+    
+    "compliance-check": {
+      "description": "Compliance assessment",
+      "steps": [
+        { "agent": "librarian", "task": "fetch compliance requirements" },
+        { "agent": "explorer", "task": "scan for compliance evidence" },
+        { "agent": "oracle", "task": "gap analysis" },
+        { "agent": "fixer", "task": "implement missing controls" },
+        { "agent": "council", "task": "validate compliance posture" }
+      ]
+    }
+  },
+
+  "mcp_servers": {
+    "security-advisories": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@security/mcp-advisories"],
+      "env": {
+        "NVD_API_KEY": "${NVD_API_KEY}"
+      }
+    },
+    "github-security": {
+      "type": "http",
+      "url": "https://api.github.com/advisories",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    },
+    "terraform-docs": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@hashicorp/mcp-terraform"]
+    },
+    "kubernetes-api": {
+      "type": "stdio",
+      "command": "kubectl",
+      "args": ["mcp-server"]
+    }
+  },
+
+  "cost_optimization": {
+    "explorer": { "max_cost_per_session": 0.50 },
+    "librarian": { "max_cost_per_session": 1.00 },
+    "oracle": { "max_cost_per_session": 5.00 },
+    "fixer": { "max_cost_per_session": 2.00 },
+    "council": { "max_cost_per_session": 10.00 }
+  }
+}
