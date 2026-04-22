@@ -1,0 +1,226 @@
+#!/bin/bash
+# =============================================================================
+# CI/CD Security Pipeline
+# =============================================================================
+# GitHub Actions workflow with AI-assisted security checks
+# Copy to: .github/workflows/security-pipeline.yml
+# =============================================================================
+
+name: AI-Assisted Security Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday
+
+env:
+  AI_MODEL: gpt-5.4-mini
+  SECURITY_FAIL_THRESHOLD: high
+
+jobs:
+  # ==========================================================================
+  # Job 1: Secret Detection
+  # ==========================================================================
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+          
+      - name: AI Analysis of Secrets
+        if: failure()
+        run: |
+          echo "Secrets detected. Running AI analysis..."
+          # In real implementation, you'd use the actual scan output
+          echo "Sample secret output" | sgpt --role security_auditor \
+            "analyze exposure impact, recommend rotation procedure"
+
+  # ==========================================================================
+  # Job 2: SAST (Static Application Security Testing)
+  # ==========================================================================
+  sast:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        language: [python, javascript, go]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        
+      - name: AI Security Review
+        run: |
+          # Download SARIF results
+          # Run AI analysis
+          echo "Analyzing CodeQL results with AI..."
+          # cat results.sarif | sgpt --role security_auditor "prioritize findings"
+
+  # ==========================================================================
+  # Job 3: IaC Security Scanning
+  # ==========================================================================
+  iac-security:
+    name: Infrastructure Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform,kubernetes,dockerfile
+          output_format: sarif
+          output_file_path: reports/checkov.sarif
+          soft_fail: true
+          
+      - name: AI IaC Analysis
+        run: |
+          if [ -f reports/checkov.sarif ]; then
+            cat reports/checkov.sarif | jq '.runs[0].results[] | select(.level=="error")' | \
+              sgpt --role terraform_security "analyze critical findings, generate Terraform fixes"
+          fi
+
+  # ==========================================================================
+  # Job 4: Dependency Vulnerability Scanning
+  # ==========================================================================
+  dependency-scan:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          
+      - name: AI Vulnerability Analysis
+        run: |
+          cat trivy-results.sarif | jq -r '.runs[0].results[] | "\(.ruleId): \(.message.text)"' | \
+            sgpt "prioritize by exploitability, suggest update path"
+
+  # ==========================================================================
+  # Job 5: Container Security
+  # ==========================================================================
+  container-scan:
+    name: Container Security
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build image
+        run: docker build -t app:${{ github.sha }} .
+        
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'app:${{ github.sha }}'
+          format: 'sarif'
+          output: 'trivy-image-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          
+      - name: AI Container Analysis
+        run: |
+          echo "Container scan complete. AI analysis..."
+          # AI suggests base image updates, configuration fixes
+
+  # ==========================================================================
+  # Job 6: AI Security Review (New!)
+  # ==========================================================================
+  ai-security-review:
+    name: AI Security Review
+    runs-on: ubuntu-latest
+    needs: [secret-scan, sast, iac-security]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Generate diff for review
+        run: |
+          git diff ${{ github.event.pull_request.base.sha }} ${{ github.sha }} > pr-diff.patch
+          
+      - name: AI Code Review
+        run: |
+          cat pr-diff.patch | sgpt --role security_auditor \
+            "review this code change for security issues. Focus on:
+             - New vulnerabilities introduced
+             - Security best practices
+             - Potential attack vectors
+             - Compliance with security standards
+             Provide specific line references and remediation code."
+            > ai-security-review.md
+            
+      - name: Upload AI Review
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-security-review
+          path: ai-security-review.md
+          
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const review = fs.readFileSync('ai-security-review.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🤖 AI Security Review\n\n${review}`
+            });
+
+  # ==========================================================================
+  # Job 7: Security Gate
+  # ==========================================================================
+  security-gate:
+    name: Security Gate
+    runs-on: ubuntu-latest
+    needs: [secret-scan, sast, iac-security, dependency-scan, ai-security-review]
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        run: |
+          echo "Checking security scan results..."
+          
+          # Aggregate results
+          # In production, parse actual results
+          
+          # AI final assessment
+          echo "Requesting AI security assessment..."
+          # oh-my-opencode --agent council "assess overall security posture, approve or block merge"
+          
+      - name: Update PR Status
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Updating PR with security status..."
