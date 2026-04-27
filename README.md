@@ -16,6 +16,7 @@ This repository documents approaches, paradigms, and best practices for DevSecOp
 | [Paradigms](./docs/paradigms.md) | Different approaches to AI-assisted DevSecOps |
 | [Configurations](./configs/) | Ready-to-use configuration templates |
 | [Use Cases](./docs/use-cases.md) | Practical examples and patterns |
+| [Secure PR Review](./docs/secure-pr-review.md) | Pre-PR AI-assisted security review |
 
 ## Core Philosophy
 
@@ -88,12 +89,14 @@ pip install aider-chat
 │   ├── frameworks.md         # Framework comparison matrix
 │   ├── security.md           # Security guide
 │   ├── paradigms.md          # Approach comparison
+│   ├── secure-pr-review.md   # Pre-PR security review guide
 │   └── use-cases.md          # Practical examples
 ├── configs/
 │   ├── oh-my-opencode-slim/  # Multi-agent configurations
 │   ├── shellgpt/             # ShellGPT roles and configs
 │   └── security-policies/    # Permission templates
 └── examples/
+    ├── developer-security/   # Pre-PR security review workflow
     ├── incident-response/    # Security incident workflows
     ├── iac-scanning/         # Infrastructure as Code security
     └── pipeline-security/    # CI/CD security patterns
