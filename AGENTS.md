@@ -272,12 +272,12 @@ iac-scan-results/ # generated during scans
 
 | Agent | Model Tier | Typical Cost/Session | When to Escalate |
 |-------|-----------|----------------------|------------------|
-| Explorer | Ultra-cheap (DeepSeek V3.2) | ~$0.05 | Never — read-only |
-| Librarian | Cheap (GPT-5.4-mini) | ~$0.10 | Complex multi-source research |
-| Fixer | Mid-tier (Claude Sonnet 4.6) | ~$0.50 | Cross-system refactor |
-| Oracle | Frontier (Claude Opus 4.7) | ~$2.00 | Architecture review |
-| Designer | Mid-tier (Claude Sonnet 4.6) | ~$0.30 | Complex dashboard |
-| Council | Multi-frontier | ~$5.00 | Only for high-stakes decisions |
+| Explorer | Ultra-cheap (DeepSeek V4 Flash) | ~$0.03 | Never — read-only |
+| Librarian | Cheap (Kimi K2.5) | ~$0.15 | Complex multi-source research |
+| Fixer | Mid-tier (DeepSeek V4 Pro) | ~$0.40 | Cross-system refactor |
+| Oracle | Frontier (Kimi K2.6) | ~$1.50 | Architecture review |
+| Designer | Cheap (Qwen 3.6 Plus) | ~$0.15 | Complex dashboard |
+| Council | Multi-frontier (Kimi K2.6 + DeepSeek V4 Pro + GLM-5.1) | ~$3.00 | Only for high-stakes decisions |
 
 ---
 
