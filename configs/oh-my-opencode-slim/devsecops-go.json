@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/alvinunreal/oh-my-opencode-slim/main/schema.json",
-  "version": "2.0.0",
-  "description": "DevSecOps-optimized configuration for opencode-go (Crush) — April 2026 SOTA models",
+  "version": "2.1.0",
+  "description": "DevSecOps-optimized configuration for opencode-go subscription — using only available models (Apr 2026)",
 
   "orchestrator": {
-    "model": "anthropic/claude-opus-4.7",
+    "model": "opencode-go/kimi-k2.6",
     "temperature": 0.3,
     "system_prompt": "You are a DevSecOps orchestrator running on opencode-go. Route security tasks to appropriate agents, enforce least privilege, and ensure all security changes are audited. Never auto-execute destructive operations. Prefer parallel execution for independent tasks.",
     "max_tokens": 8000
@@ -12,7 +12,7 @@
 
   "agents": {
     "explorer": {
-      "model": "deepseek/deepseek-v3.2",
+      "model": "opencode-go/deepseek-v4-flash",
       "temperature": 0.1,
       "system_prompt": "You are a security-focused codebase explorer. Map attack surfaces, find secrets, inventory IaC resources. Be thorough but fast. Report findings in structured format with file paths and line numbers.",
       "max_tokens": 4000,
@@ -29,7 +29,7 @@
     },
 
     "librarian": {
-      "model": "openai/gpt-5.4-mini",
+      "model": "opencode-go/kimi-k2.5",
       "temperature": 0.1,
       "system_prompt": "You are a security research librarian. Fetch CVEs, compliance requirements, and threat intelligence. Always cite sources, provide confidence levels, and include CVSS scores when available.",
       "mcp_servers": ["security-advisories", "nvd-api", "mitre-attack"],
@@ -37,7 +37,7 @@
     },
 
     "oracle": {
-      "model": "anthropic/claude-opus-4.7",
+      "model": "opencode-go/kimi-k2.6",
       "temperature": 0.2,
       "system_prompt": "You are a senior security architect. Provide strategic security guidance, assess risk, and review architectures. Be conservative in risk acceptance. Document all assumptions. Prioritize by exploitability and blast radius.",
       "max_tokens": 16000,
@@ -46,7 +46,7 @@
     },
 
     "fixer": {
-      "model": "anthropic/claude-sonnet-4.6",
+      "model": "opencode-go/deepseek-v4-pro",
       "temperature": 0.1,
       "system_prompt": "You are a security remediation engineer. Fix vulnerabilities safely. Prefer non-breaking changes. Test fixes when possible. Never introduce new vulnerabilities. Write tests for every fix.",
       "tools": ["view", "read", "edit", "write", "bash"],
@@ -56,7 +56,7 @@
     },
 
     "designer": {
-      "model": "anthropic/claude-sonnet-4.6",
+      "model": "opencode-go/qwen3.6-plus",
       "temperature": 0.4,
       "system_prompt": "You are a security UI/UX designer. Create dashboards, documentation, and security interfaces. Focus on clarity, actionability, and severity indicators. Structure outputs for both technical and executive audiences.",
       "tools": ["view", "write"]
@@ -64,9 +64,9 @@
 
     "council": {
       "models": [
-        "anthropic/claude-opus-4.7",
-        "openai/gpt-5.5",
-        "google/gemini-3.1-pro"
+        "opencode-go/kimi-k2.6",
+        "opencode-go/deepseek-v4-pro",
+        "opencode-go/glm-5.1"
       ],
       "consensus_threshold": 0.66,
       "system_prompt": "You are a security council. Validate critical security decisions. Flag disagreements. Require unanimous consent for high-risk acceptance. Provide dissenting opinions when models disagree.",
@@ -181,29 +181,29 @@
   },
 
   "cost_optimization": {
-    "explorer": { "max_cost_per_session": 0.10 },
-    "librarian": { "max_cost_per_session": 0.50 },
-    "oracle": { "max_cost_per_session": 5.00 },
-    "fixer": { "max_cost_per_session": 2.00 },
-    "designer": { "max_cost_per_session": 1.00 },
-    "council": { "max_cost_per_session": 10.00 }
+    "explorer": { "max_cost_per_session": 0.05 },
+    "librarian": { "max_cost_per_session": 0.30 },
+    "oracle": { "max_cost_per_session": 3.00 },
+    "fixer": { "max_cost_per_session": 1.50 },
+    "designer": { "max_cost_per_session": 0.50 },
+    "council": { "max_cost_per_session": 6.00 }
   },
 
   "model_routing": {
-    "description": "Three-tier routing strategy for cost-quality balance",
+    "description": "Three-tier routing using only opencode-go subscription models",
     "tier_1_lightweight": {
-      "models": ["deepseek/deepseek-v3.2", "openai/gpt-5.4-mini"],
-      "use_for": ["classification", "routing", "file_reads", "docstrings", "simple_grep"],
+      "models": ["opencode-go/deepseek-v4-flash", "opencode-go/qwen3.5-plus", "opencode-go/minimax-m2.5"],
+      "use_for": ["classification", "routing", "file_reads", "docstrings", "simple_grep", "secret_scanning"],
       "target_percentage": 80
     },
     "tier_2_mid": {
-      "models": ["anthropic/claude-sonnet-4.6", "openai/gpt-5.4"],
-      "use_for": ["code_generation", "feature_implementation", "code_review", "documentation"],
+      "models": ["opencode-go/deepseek-v4-pro", "opencode-go/qwen3.6-plus", "opencode-go/minimax-m2.7", "opencode-go/glm-5.1"],
+      "use_for": ["code_generation", "feature_implementation", "code_review", "documentation", "compliance_mapping"],
       "target_percentage": 15
     },
     "tier_3_frontier": {
-      "models": ["anthropic/claude-opus-4.7", "openai/gpt-5.5"],
-      "use_for": ["architecture_decisions", "complex_debugging", "cross_system_design"],
+      "models": ["opencode-go/kimi-k2.6", "opencode-go/mimo-v2.5-pro"],
+      "use_for": ["architecture_decisions", "complex_debugging", "cross_system_design", "incident_command"],
       "target_percentage": 5
     }
   }
