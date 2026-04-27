@@ -130,6 +130,17 @@
         { "agent": "fixer", "task": "implement missing controls" },
         { "agent": "council", "task": "validate compliance posture" }
       ]
+    },
+
+    "secure-pr-review": {
+      "description": "Developer pre-PR security review — run before every pull request",
+      "steps": [
+        { "agent": "explorer", "task": "scan changed files for secrets, hardcoded credentials, and insecure patterns" },
+        { "agent": "librarian", "task": "check new or updated dependencies for known CVEs and advisories" },
+        { "agent": "oracle", "task": "threat model the feature delta — assess security impact of the changes" },
+        { "agent": "fixer", "task": "auto-fix detectable issues and write security tests", "require_approval": true },
+        { "agent": "designer", "task": "generate a security summary markdown block for the PR description" }
+      ]
     }
   },
 
