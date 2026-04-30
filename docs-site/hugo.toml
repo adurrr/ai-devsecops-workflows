@@ -1,11 +1,9 @@
-baseURL = 'https://adurrr.github.io/ai-devsecops-workflows/'
+baseURL = 'https://adurrr.github.io/ai-devsecops-workflows'
 defaultContentLanguage = 'en'
 title = 'AI-Assisted DevSecOps Workflows'
 theme = 'github.com/google/docsy'
 
-# GitHub Pages project site configuration
-canonifyURLs = true
-relativeURLs = true
+# GitHub Pages project site configuration — use absolute URLs from baseURL only
 
 [params]
   copyright = "AI-Assisted DevSecOps Workflows Authors"
