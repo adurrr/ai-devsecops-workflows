@@ -6,6 +6,14 @@ description: >
   System design patterns, agent responsibilities, and integration architecture for AI-assisted DevSecOps.
 ---
 
+{{< alert title="Agent Permissions and Security" color="warning" >}}
+Always follow the principle of least privilege when configuring agent permissions. Never grant execute permissions to agents handling sensitive codebases without human approval gates.
+{{< /alert >}}
+
+{{< alert title="Cost Optimization" color="info" >}}
+Use ultra-cheap models (e.g., DeepSeek V4 Flash) for read-only tasks like exploration, and reserve frontier models for strategic decisions requiring deep analysis.
+{{< /alert >}}
+
 ## System Design Patterns
 
 ### The Agent Pantheon in DevSecOps Context

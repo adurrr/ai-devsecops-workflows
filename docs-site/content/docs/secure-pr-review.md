@@ -8,6 +8,14 @@ description: >
 tags: ["pr-review", "security", "workflow", "pre-merge", "ai-review"]
 ---
 
+{{< alert title="No Auto-Execution of Destructive Operations" color="warning" >}}
+This workflow never auto-executes destructive commands. All fixes from the Fixer agent require explicit human approval before being applied.
+{{< /alert >}}
+
+{{< alert title="CI/CD Integration" color="info" >}}
+Integrate this workflow as a pre-PR check in your CI/CD pipeline to catch security issues before they reach code review. The script runs entirely locally.
+{{< /alert >}}
+
 > Run this workflow before opening a pull request to catch security issues early.
 
 ---

@@ -8,6 +8,18 @@ description: >
 tags: ["security", "threat-model", "compliance", "secrets", "prompt-injection", "hardening"]
 ---
 
+{{< alert title="Prompt Injection Risks" color="danger" >}}
+Prompt injection is the highest-priority threat in AI-assisted workflows. Always sanitize user input and use prompt boundaries to prevent attackers from overriding system instructions.
+{{< /alert >}}
+
+{{< alert title="Secret Protection" color="warning" >}}
+Never include secrets in AI prompts or context. Use `.aiignore` files, pre-flight filtering, and environment variable masking to prevent accidental secret exposure.
+{{< /alert >}}
+
+{{< alert title="Local Models for Sensitive Codebases" color="info" >}}
+For confidential or restricted data, use local models (Ollama, LM Studio) instead of cloud providers. This ensures no data leaves your infrastructure.
+{{< /alert >}}
+
 ## Threat Model
 
 ### AI-Specific Threats in DevSecOps

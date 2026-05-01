@@ -8,6 +8,10 @@ description: >
 tags: ["use-cases", "patterns", "incident-response", "iac", "compliance", "containers", "cicd"]
 ---
 
+{{< alert title="Start with CLI Tools" color="info" >}}
+For quick operations and one-off queries, start with CLI tools (ShellGPT) before moving to pair programming or multi-agent workflows. This reduces overhead and speeds up routine tasks.
+{{< /alert >}}
+
 ## Incident Response
 
 ### Scenario: Container Escape Detection

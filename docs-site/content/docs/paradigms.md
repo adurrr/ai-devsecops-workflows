@@ -8,6 +8,14 @@ description: >
 tags: ["paradigms", "multi-agent", "pair-programming", "cli", "approaches", "workflow"]
 ---
 
+{{< alert title="Choosing the Right Paradigm" color="info" >}}
+Start with the simplest paradigm that fits your task. Use CLI for quick commands, pair programming for focused development, and multi-agent for complex security audits.
+{{< /alert >}}
+
+{{< alert title="Security Review Requirements" color="warning" >}}
+All security-critical decisions require human approval. Enable Council mode for high-stakes changes and never auto-execute destructive operations in production.
+{{< /alert >}}
+
 ## Overview
 
 Three primary paradigms have emerged for integrating AI assistants into DevSecOps workflows. Each offers distinct trade-offs between automation, control, and security.
