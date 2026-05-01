@@ -2,9 +2,11 @@
 title: "Practical Use Cases & Patterns"
 linkTitle: "Use Cases"
 weight: 5
+description: >
+  Practical examples and patterns for incident response, IaC security,
+  secret management, compliance, container security, CI/CD, and threat hunting.
+tags: ["use-cases", "patterns", "incident-response", "iac", "compliance", "containers", "cicd"]
 ---
-
-# Practical Use Cases & Patterns
 
 ## Incident Response
 

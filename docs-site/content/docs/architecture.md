@@ -6,8 +6,6 @@ description: >
   System design patterns, agent responsibilities, and integration architecture for AI-assisted DevSecOps.
 ---
 
-# DevSecOps Architecture with AI Assistants
-
 ## System Design Patterns
 
 ### The Agent Pantheon in DevSecOps Context

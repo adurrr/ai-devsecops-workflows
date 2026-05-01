@@ -2,9 +2,11 @@
 title: "LLM Assistant Frameworks: Comprehensive Comparison"
 linkTitle: "Frameworks"
 weight: 2
+description: >
+  Detailed comparison of oh-my-opencode-slim, Aider, ShellGPT, AIChat,
+  Claude Code, and Crush for DevSecOps workflows.
+tags: ["frameworks", "tools", "comparison", "aider", "shellgpt", "aichat", "claude", "crush"]
 ---
-
-# LLM Assistant Frameworks: Comprehensive Comparison
 
 ## Executive Summary
 

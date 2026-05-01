@@ -4,8 +4,9 @@ linkTitle: "Home"
 weight: 1
 ---
 
-{{< blocks/cover title="AI-Assisted DevSecOps Workflows" subtitle="Integrating LLM assistants into security-first DevSecOps practices" image_anchor="top" height="med" color="primary" >}}
+{{< blocks/cover title="AI-Assisted DevSecOps Workflows" image_anchor="top" height="small" color="primary" >}}
 <div class="mx-auto">
+  <p class="h5 mt-3 mb-4">Integrating LLM assistants into security-first DevSecOps practices</p>
   <p class="lead mt-3">A comprehensive guide to using oh-my-opencode-slim, opencode-go, and modern AI tooling in your DevSecOps workflows.</p>
   <a class="btn btn-lg btn-secondary me-3 mb-4" href="{{< relref "docs" >}}">
     Get Started <i class="fas fa-arrow-alt-circle-right ms-2"></i>

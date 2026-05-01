@@ -2,9 +2,11 @@
 title: "Secure PR Review Workflow"
 linkTitle: "Secure PR Review"
 weight: 6
+description: >
+  Run a 5-step AI-assisted security review over your branch changes
+  before they reach code review.
+tags: ["pr-review", "security", "workflow", "pre-merge", "ai-review"]
 ---
-
-# Secure PR Review Workflow
 
 > Run this workflow before opening a pull request to catch security issues early.
 

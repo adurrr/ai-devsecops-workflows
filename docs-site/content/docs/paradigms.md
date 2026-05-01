@@ -2,9 +2,11 @@
 title: "Paradigms: Approaches to AI-Assisted DevSecOps"
 linkTitle: "Paradigms"
 weight: 4
+description: >
+  Three primary paradigms for integrating AI assistants into DevSecOps:
+  Orchestrated Multi-Agent, Single-Agent Pair Programming, and CLI Command Generation.
+tags: ["paradigms", "multi-agent", "pair-programming", "cli", "approaches", "workflow"]
 ---
-
-# Paradigms: Approaches to AI-Assisted DevSecOps
 
 ## Overview
 

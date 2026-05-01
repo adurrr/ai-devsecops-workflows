@@ -2,9 +2,11 @@
 title: "Research Findings: AI-Assisted DevSecOps Workflows"
 linkTitle: "Research"
 weight: 7
+description: >
+  Comprehensive research findings on LLM frameworks, shell AI assistants,
+  DevSecOps integration patterns, cost analysis, and implementation recommendations.
+tags: ["research", "frameworks", "cost-analysis", "integration", "devsecops", "ai"]
 ---
-
-# Research Findings: AI-Assisted DevSecOps Workflows
 
 > Comprehensive research summary conducted on April 23, 2026  
 > Research scope: LLM frameworks, shell AI assistants, DevSecOps integration patterns

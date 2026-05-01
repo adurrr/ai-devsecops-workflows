@@ -2,9 +2,11 @@
 title: "Security Guide: AI-Assisted DevSecOps"
 linkTitle: "Security"
 weight: 3
+description: >
+  Threat model, critical security controls, compliance considerations,
+  attack scenarios, and hardening guides for AI-assisted DevSecOps.
+tags: ["security", "threat-model", "compliance", "secrets", "prompt-injection", "hardening"]
 ---
-
-# Security Guide: AI-Assisted DevSecOps
 
 ## Threat Model
 
