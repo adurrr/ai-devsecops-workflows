@@ -24,24 +24,36 @@ For confidential or restricted data, use local models (Ollama, LM Studio) instea
 
 ### AI-Specific Threats in DevSecOps
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                      THREAT LANDSCAPE                                │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  Input Layer          Processing Layer         Output Layer          │
-│  ┌──────────┐         ┌─────────────┐         ┌──────────┐          │
-│  │ Prompt   │         │ LLM Engine  │         │ Generated│          │
-│  │ Injection│────▶    │             │────▶    │ Commands │          │
-│  └──────────┘         └─────────────┘         └──────────┘          │
-│        │                     │                      │               │
-│        ▼                     ▼                      ▼               │
-│  ┌──────────┐         ┌─────────────┐         ┌──────────┐          │
-│  │ Context  │         │ Training    │         │ Data     │          │
-│  │ Leakage  │         │ Data Poison │         │ Exfil    │          │
-│  └──────────┘         └─────────────┘         └──────────┘          │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph INPUT["Input Layer"]
+        direction TB
+        PI["Prompt<br/>Injection"]
+        style PI fill:#d9534f,stroke:#333,stroke-width:2px,color:#fff
+        CL["Context<br/>Leakage"]
+        style CL fill:#f0ad4e,stroke:#333,stroke-width:2px,color:#fff
+    end
+
+    subgraph PROCESS["Processing Layer"]
+        direction TB
+        LLM["LLM Engine"]
+        style LLM fill:#5bc0de,stroke:#333,stroke-width:2px,color:#fff
+        TDP["Training<br/>Data Poison"]
+        style TDP fill:#f0ad4e,stroke:#333,stroke-width:2px,color:#fff
+    end
+
+    subgraph OUTPUT["Output Layer"]
+        direction TB
+        GC["Generated<br/>Commands"]
+        style GC fill:#5bc0de,stroke:#333,stroke-width:2px,color:#fff
+        DEX["Data<br/>Exfil"]
+        style DEX fill:#d9534f,stroke:#333,stroke-width:2px,color:#fff
+    end
+
+    PI --> LLM
+    CL --> LLM
+    LLM --> GC
+    LLM --> DEX
 ```
 
 ### Risk Severity Matrix
@@ -157,6 +169,45 @@ SAFE_ENV=$(env | grep -v -E 'KEY|SECRET|PASSWORD|TOKEN|PRIVATE' | xargs)
 
 # Run AI tool with filtered environment
 env -i $SAFE_ENV HOME="$HOME" PATH="$PATH" "$@"
+```
+
+#### Data Flow Security
+
+```mermaid
+flowchart LR
+    subgraph INPUT["User Input"]
+        UI["User<br/>Query"]
+        style UI fill:#5bc0de,stroke:#333,stroke-width:2px,color:#fff
+    end
+
+    subgraph PROCESS["Processing"]
+        LF["Local<br/>Filter"]
+        style LF fill:#f0ad4e,stroke:#333,stroke-width:2px,color:#fff
+        AI["AI<br/>Assistant"]
+        style AI fill:#5bc0de,stroke:#333,stroke-width:2px,color:#fff
+        LS["Local<br/>Sanitization"]
+        style LS fill:#f0ad4e,stroke:#333,stroke-width:2px,color:#fff
+    end
+
+    subgraph OUTPUT["Output"]
+        OUT["Output"]
+        style OUT fill:#5bc0de,stroke:#333,stroke-width:2px,color:#fff
+        CR["Command<br/>Review"]
+        style CR fill:#f0ad4e,stroke:#333,stroke-width:2px,color:#fff
+    end
+
+    subgraph CONFIG[".gitignore Patterns"]
+        GI[".aiignore<br/>.gitignore"]
+        style GI fill:#d9534f,stroke:#333,stroke-width:2px,color:#fff
+    end
+
+    UI --> LF
+    LF --> AI
+    AI --> LS
+    LS --> OUT
+    OUT --> CR
+    GI -.-> LF
+    GI -.-> LS
 ```
 
 **C. .aiignore Configuration**

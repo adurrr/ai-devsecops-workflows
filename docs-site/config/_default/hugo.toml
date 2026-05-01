@@ -15,6 +15,11 @@ theme = 'github.com/google/docsy'
   # Docsy theme settings
   offlineSearch = true
 
+  # Enable Mermaid diagrams
+  [params.mermaid]
+    enable = true
+    theme = "default"
+
   [params.ui]
     breadcrumb_disable = false
     navbar_logo = false

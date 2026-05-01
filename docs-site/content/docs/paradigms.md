@@ -28,19 +28,46 @@ Three primary paradigms have emerged for integrating AI assistants into DevSecOp
 **Divide and conquer**: Specialized agents handle specific aspects of security workflows, coordinated by a central orchestrator.
 
 ### Architecture
-```
-                    ┌──────────────┐
-                    │ Orchestrator │
-                    └──────┬───────┘
-                           │
-        ┌─────────┬────────┼────────┬─────────┐
-        ▼         ▼        ▼        ▼         ▼
-    ┌───────┐ ┌───────┐ ┌──────┐ ┌──────┐ ┌──────┐
-    │Explorer│ │Librarian│ │Oracle│ │Fixer │ │Council│
-    └───────┘ └───────┘ └──────┘ └──────┘ └──────┘
-       │          │        │        │        │
-       ▼          ▼        ▼        ▼        ▼
-    Discovery  Research  Strategy  Execute  Validate
+```mermaid
+flowchart TD
+    O[Orchestrator]:::primary
+
+    subgraph Agents [Specialized Agents]
+        direction LR
+        E[Explorer]:::agent
+        L[Librarian]:::agent
+        Or[Oracle]:::agent
+        F[Fixer]:::agent
+        C[Council]:::agent
+    end
+
+    subgraph Tasks [Core Functions]
+        direction LR
+        D[Discovery]:::task
+        R[Research]:::task
+        S[Strategy]:::task
+        Ex[Execute]:::task
+        V[Validate]:::task
+    end
+
+    O --> Agents
+    E --> D
+    L --> R
+    Or --> S
+    F --> Ex
+    C --> V
+
+    style O fill:#6366f1,stroke:#333,stroke-width:2px,color:#fff
+    style E fill:#10b981,stroke:#333,stroke-width:1px
+    style L fill:#10b981,stroke:#333,stroke-width:1px
+    style Or fill:#10b981,stroke:#333,stroke-width:1px
+    style F fill:#10b981,stroke:#333,stroke-width:1px
+    style C fill:#f59e0b,stroke:#333,stroke-width:1px
+    style D fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style R fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style S fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style Ex fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style V fill:#e5e7eb,stroke:#333,stroke-width:1px
 ```
 
 ### When to Use
@@ -113,19 +140,34 @@ Three primary paradigms have emerged for integrating AI assistants into DevSecOp
 **Deep collaboration**: One AI assistant works alongside the engineer with full context and continuous interaction.
 
 ### Architecture
-```
-┌─────────────────────────────────────────────┐
-│                                             │
-│   Engineer ◄───────────────► AI Assistant   │
-│        │                          │         │
-│        │    Shared Context        │         │
-│        │    ┌──────────┐          │         │
-│        └───►│ Codebase │◄─────────┘         │
-│             │ Terminal │                     │
-│             │   Docs   │                     │
-│             └──────────┘                     │
-│                                             │
-└─────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    subgraph Human [Human Engineer]
+        direction TB
+        H[Engineer]:::human
+    end
+
+    subgraph AI [AI Assistant]
+        direction TB
+        AI[AI Assistant]:::ai
+    end
+
+    subgraph Context [Shared Context]
+        direction TB
+        C[Codebase]:::context
+        T[Terminal]:::context
+        D[Docs]:::context
+    end
+
+    H <-->|Continuous<br/>Collaboration| AI
+    H <-->|Read/Write| Context
+    AI <-->|Read/Write| Context
+
+    style H fill:#3b82f6,stroke:#333,stroke-width:2px,color:#fff
+    style AI fill:#8b5cf6,stroke:#333,stroke-width:2px,color:#fff
+    style C fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style D fill:#e5e7eb,stroke:#333,stroke-width:1px
 ```
 
 ### When to Use
@@ -203,9 +245,22 @@ Aider: "Done. I've:
 **Frictionless execution**: Natural language to shell commands with minimal overhead.
 
 ### Architecture
-```
-Human ──► Natural Language ──► AI ──► Shell Command ──► Review ──► Execute
-         "Find large files"       "find . -size +10M"    [E/d/a]    
+```mermaid
+flowchart LR
+    H[Human]:::human --> |Natural<br/>Language| NL[Natural<br/>Language]:::input
+    NL -->|Prompt| AI[AI Model]:::ai
+    AI -->|Generate| SC[Shell<br/>Command]:::output
+    SC -->|Review| R{Review}:::decision
+    R -->|Execute| E[Execute]:::action
+    R -->|Abort| A[Abort]:::action
+
+    style H fill:#3b82f6,stroke:#333,stroke-width:2px,color:#fff
+    style NL fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style AI fill:#8b5cf6,stroke:#333,stroke-width:2px,color:#fff
+    style SC fill:#10b981,stroke:#333,stroke-width:1px
+    style R fill:#f59e0b,stroke:#333,stroke-width:2px
+    style E fill:#ef4444,stroke:#333,stroke-width:1px
+    style A fill:#6b7280,stroke:#333,stroke-width:1px
 ```
 
 ### When to Use
@@ -308,19 +363,53 @@ $ sgpt -s "backup all .env files to timestamped directory"
 ## Hybrid Approaches
 
 ### The Tiered Model
+```mermaid
+flowchart TD
+    T1[Tier 1: CLI<br/>ShellGPT]:::tier1 --> T2[Tier 2: Pair<br/>Aider]:::tier2
+    T2 --> T3[Tier 3: Multi-Agent<br/>oh-my-opencode-slim]:::tier3
+    T3 --> T4[Tier 4: Council<br/>Critical Decisions]:::tier4
 
-```
-Tier 1: CLI (ShellGPT)
-  └── Daily operations, quick queries
-      
-Tier 2: Pair (Aider)  
-  └── Development sessions, focused work
-      
-Tier 3: Multi-Agent (oh-my-opencode-slim)
-  └── Audits, assessments, complex analysis
-      
-Tier 4: Council
-  └── Critical security decisions, compliance
+    subgraph T1_Detail [Daily Operations]
+        direction LR
+        T1a[Quick queries]:::detail
+        T1b[One-liners]:::detail
+    end
+
+    subgraph T2_Detail [Development]
+        direction LR
+        T2a[Focused sessions]:::detail
+        T2b[Refactoring]:::detail
+    end
+
+    subgraph T3_Detail [Complex Analysis]
+        direction LR
+        T3a[Security audits]:::detail
+        T3b[Assessments]:::detail
+    end
+
+    subgraph T4_Detail [Governance]
+        direction LR
+        T4a[Compliance]:::detail
+        T4b[High-stakes]:::detail
+    end
+
+    T1 -.-> T1_Detail
+    T2 -.-> T2_Detail
+    T3 -.-> T3_Detail
+    T4 -.-> T4_Detail
+
+    style T1 fill:#6b7280,stroke:#333,stroke-width:2px,color:#fff
+    style T2 fill:#3b82f6,stroke:#333,stroke-width:2px,color:#fff
+    style T3 fill:#8b5cf6,stroke:#333,stroke-width:2px,color:#fff
+    style T4 fill:#ef4444,stroke:#333,stroke-width:2px,color:#fff
+    style T1a fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T1b fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T2a fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T2b fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T3a fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T3b fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T4a fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style T4b fill:#e5e7eb,stroke:#333,stroke-width:1px
 ```
 
 ### Implementation Strategy
@@ -429,21 +518,36 @@ security-tier-4:
 ---
 
 ## Decision Framework
+```mermaid
+flowchart TD
+    Q1{Is this a<br/>recurring<br/>operational<br/>task?}:::decision
 
-```
-Is this a recurring operational task?
-├── YES → Use CLI (ShellGPT)
-│   └── Is it complex or multi-step?
-│       └── YES → Consider automation scripts
-│
-└── NO → Does it require codebase context?
-    ├── YES → Use Pair (Aider)
-    │   └── Is it security-critical?
-    │       └── YES → Add Council validation
-    │
-    └── NO → Use Multi-Agent
-        └── Is it high-stakes?
-            └── YES → Enable Council mode
+    Q1 -->|YES| CLI[CLI<br/>ShellGPT]:::result
+    Q1 -->|NO| Q2{Does it require<br/>codebase<br/>context?}:::decision
+
+    Q2 -->|YES| PAIR[Pair<br/>Aider]:::result
+    Q2 -->|NO| MA[Multi-Agent]:::result
+
+    Q2 -->|YES| Q3{Is it<br/>security-<br/>critical?}:::decision
+    Q3 -->|YES| CV[Council<br/>Validation]:::result
+
+    MA --> Q4{Is it<br/>high-stakes?}:::decision
+    Q4 -->|YES| CM[Council<br/>Mode]:::result
+
+    CLI --> Q5{Is it complex<br/>or multi-step?}:::decision
+    Q5 -->|YES| AS[Automation<br/>Scripts]:::result
+
+    style Q1 fill:#f59e0b,stroke:#333,stroke-width:2px
+    style Q2 fill:#f59e0b,stroke:#333,stroke-width:2px
+    style Q3 fill:#f59e0b,stroke:#333,stroke-width:2px
+    style Q4 fill:#f59e0b,stroke:#333,stroke-width:2px
+    style Q5 fill:#f59e0b,stroke:#333,stroke-width:2px
+    style CLI fill:#6b7280,stroke:#333,stroke-width:2px,color:#fff
+    style PAIR fill:#3b82f6,stroke:#333,stroke-width:2px,color:#fff
+    style MA fill:#8b5cf6,stroke:#333,stroke-width:2px,color:#fff
+    style CV fill:#f59e0b,stroke:#333,stroke-width:2px,color:#fff
+    style CM fill:#ef4444,stroke:#333,stroke-width:2px,color:#fff
+    style AS fill:#10b981,stroke:#333,stroke-width:2px,color:#fff
 ```
 
 ---

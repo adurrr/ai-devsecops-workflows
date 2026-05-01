@@ -20,24 +20,28 @@ Use ultra-cheap models (e.g., DeepSeek V4 Flash) for read-only tasks like explor
 
 When using **oh-my-opencode-slim**, each agent maps to specific DevSecOps responsibilities:
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    DEVSECOPS WORKFLOW                        │
-└─────────────────────────────────────────────────────────────┘
-
-  ┌──────────────┐
-  │ Orchestrator │ ← Main interface, routes tasks
-  └──────┬───────┘
-         │
-    ┌────┴────┬─────────┬─────────┬─────────┬─────────┐
-    ▼         ▼         ▼         ▼         ▼         ▼
-┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
-│Explorer│ │Librarian│ │Oracle │ │Fixer  │ │Designer│ │Council│
-└───┬───┘ └────┬──┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘
-    │          │        │         │         │         │
-    ▼          ▼        ▼         ▼         ▼         ▼
- Codebase   External  Strategic Implementation  UI/UX  Multi-model
- Mapping    Research  Architecture   Tasks     Polish  Consensus
+```mermaid
+flowchart TD
+    subgraph DEVSECOPS["DEVSECOPS WORKFLOW"]
+        direction TB
+        O[Orchestrator<br/>Main interface<br/>routes tasks]
+    end
+    
+    O --> E[Explorer<br/>Codebase<br/>Mapping]
+    O --> L[Librarian<br/>External<br/>Research]
+    O --> Or[Oracle<br/>Strategic<br/>Architecture]
+    O --> F[Fixer<br/>Implementation<br/>Tasks]
+    O --> D[Designer<br/>UI/UX<br/>Polish]
+    O --> C[Council<br/>Multi-model<br/>Consensus]
+    
+    style DEVSECOPS fill:#1f2937,stroke:#333,stroke-width:2px,color:#fff
+    style O fill:#7c3aed,stroke:#333,stroke-width:2px,color:#fff
+    style E fill:#059669,stroke:#333,stroke-width:1px
+    style L fill:#059669,stroke:#333,stroke-width:1px
+    style Or fill:#059669,stroke:#333,stroke-width:1px
+    style F fill:#059669,stroke:#333,stroke-width:1px
+    style D fill:#059669,stroke:#333,stroke-width:1px
+    style C fill:#059669,stroke:#333,stroke-width:1px
 ```
 
 ### Agent Responsibilities in DevSecOps
@@ -56,125 +60,165 @@ When using **oh-my-opencode-slim**, each agent maps to specific DevSecOps respon
 
 ### Pattern 1: Continuous Security Assessment
 
-```
-Trigger: Code push or schedule
-
-1. Explorer → Map codebase changes
-   └─ Identify new files, dependencies, configurations
-
-2. Oracle → Assess risk
-   └─ Analyze attack surface changes
-   └─ Prioritize security concerns
-
-3. Librarian → Research threats
-   └─ Check for new CVEs in dependencies
-   └─ Review security advisories
-
-4. Fixer → Auto-remediate (if safe)
-   └─ Update vulnerable dependencies
-   └─ Apply security patches
-   └─ Refactor insecure patterns
-
-5. Council → Validate (high-risk changes)
-   └─ Multi-model review of critical changes
-   └─ Consensus on risk acceptance
+```mermaid
+flowchart LR
+    subgraph Trigger["Trigger: Code push or schedule"]
+        direction LR
+        T[Start]
+    end
+    
+    T --> E[Explorer<br/>Map codebase<br/>changes]
+    E --> |Identify new files<br/>dependencies<br/>configurations| Or[Oracle<br/>Assess risk]
+    Or --> |Analyze attack surface<br/>Prioritize concerns| L[Librarian<br/>Research<br/>threats]
+    L --> |Check CVEs<br/>Review advisories| F[Fixer<br/>Auto-remediate<br/>if safe]
+    F --> |Update deps<br/>Apply patches<br/>Refactor| C[Council<br/>Validate<br/>high-risk]
+    C --> |Multi-model review<br/>Consensus| End[End]
+    
+    style Trigger fill:#1f2937,stroke:#333,stroke-width:2px,color:#fff
+    style E fill:#059669,stroke:#333,stroke-width:1px
+    style Or fill:#d97706,stroke:#333,stroke-width:1px
+    style L fill:#059669,stroke:#333,stroke-width:1px
+    style F fill:#dc2626,stroke:#333,stroke-width:1px
+    style C fill:#7c3aed,stroke:#333,stroke-width:1px
+    style End fill:#1f2937,stroke:#333,stroke-width:1px
 ```
 
 ### Pattern 2: Incident Response
 
-```
-Trigger: Security alert or breach
-
-1. Explorer → Immediate reconnaissance
-   └─ Find affected systems in codebase
-   └─ Map blast radius
-
-2. Librarian → Rapid research
-   └─ Look up attack vectors
-   └─ Find mitigation strategies
-
-3. Oracle → Strategic response
-   └─ Assess containment options
-   └─ Plan remediation steps
-
-4. Fixer → Execute fixes
-   └─ Apply emergency patches
-   └─ Update firewall rules
-   └─ Rotate credentials
-
-5. Designer → Document incident
-   └─ Create timeline
-   └─ Generate post-mortem template
+```mermaid
+flowchart LR
+    subgraph Trigger["Trigger: Security alert or breach"]
+        direction LR
+        T[Start]
+    end
+    
+    T --> E[Explorer<br/>Immediate<br/>reconnaissance]
+    E --> |Find affected<br/>systems<br/>Map blast radius| L[Librarian<br/>Rapid<br/>research]
+    L --> |Look up<br/>attack vectors<br/>Find mitigations| Or[Oracle<br/>Strategic<br/>response]
+    Or --> |Assess containment<br/>Plan remediation| F[Fixer<br/>Execute<br/>fixes]
+    F --> |Apply patches<br/>Update rules<br/>Rotate creds| D[Designer<br/>Document<br/>incident]
+    D --> |Create timeline<br/>Generate template| End[End]
+    
+    style Trigger fill:#1f2937,stroke:#333,stroke-width:2px,color:#fff
+    style E fill:#dc2626,stroke:#333,stroke-width:2px,color:#fff
+    style L fill:#dc2626,stroke:#333,stroke-width:1px
+    style Or fill:#d97706,stroke:#333,stroke-width:1px
+    style F fill:#dc2626,stroke:#333,stroke-width:1px
+    style D fill:#059669,stroke:#333,stroke-width:1px
+    style End fill:#1f2937,stroke:#333,stroke-width:1px
 ```
 
 ### Pattern 3: Compliance Automation
 
-```
-Trigger: Audit requirement or policy update
-
-1. Librarian → Research standards
-   └─ Fetch compliance requirements
-   └─ Map to controls
-
-2. Explorer → Find evidence
-   └─ Scan IaC for compliance gaps
-   └─ Document current state
-
-3. Oracle → Gap analysis
-   └─ Compare current vs required state
-   └─ Prioritize remediation
-
-4. Fixer → Implement controls
-   └─ Add missing security controls
-   └─ Update policies as code
-
-5. Council → Validate compliance
-   └─ Multi-model review of compliance posture
+```mermaid
+flowchart LR
+    subgraph Trigger["Trigger: Audit requirement or policy update"]
+        direction LR
+        T[Start]
+    end
+    
+    T --> L[Librarian<br/>Research<br/>standards]
+    L --> |Fetch requirements<br/>Map to controls| E[Explorer<br/>Find<br/>evidence]
+    E --> |Scan IaC<br/>Document state| Or[Oracle<br/>Gap<br/>analysis]
+    Or --> |Compare current<br/>vs required<br/>Prioritize| F[Fixer<br/>Implement<br/>controls]
+    F --> |Add security<br/>controls<br/>Update policies| C[Council<br/>Validate<br/>compliance]
+    C --> |Multi-model<br/>review posture| End[End]
+    
+    style Trigger fill:#1f2937,stroke:#333,stroke-width:2px,color:#fff
+    style L fill:#059669,stroke:#333,stroke-width:1px
+    style E fill:#059669,stroke:#333,stroke-width:1px
+    style Or fill:#d97706,stroke:#333,stroke-width:1px
+    style F fill:#059669,stroke:#333,stroke-width:1px
+    style C fill:#7c3aed,stroke:#333,stroke-width:1px
+    style End fill:#1f2937,stroke:#333,stroke-width:1px
 ```
 
 ## Integration Architecture
 
 ### With Existing DevSecOps Toolchain
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                      DEVSECOPS PLATFORM                       │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐     │
-│  │   SAST   │  │   DAST   │  │ Secrets  │  │   IaC    │     │
-│  │  Scanner │  │  Scanner │  │ Scanner  │  │ Scanner  │     │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘     │
-│       │             │             │             │            │
-│       └─────────────┴──────┬──────┴─────────────┘            │
-│                            ▼                                 │
-│                    ┌───────────────┐                         │
-│                    │  AI Assistant │ ← oh-my-opencode-slim   │
-│                    │   (Analysis)  │                         │
-│                    └───────┬───────┘                         │
-│                            │                                 │
-│       ┌────────────────────┼────────────────────┐            │
-│       ▼                    ▼                    ▼            │
-│  ┌─────────┐         ┌─────────┐         ┌─────────┐         │
-│  │  SIEM   │         │  Ticketing │      │  CI/CD  │         │
-│  │  (Splunk│         │  (Jira)   │       │ Pipeline│         │
-│  │ Datadog)│         │           │       │         │         │
-│  └─────────┘         └─────────┘         └─────────┘         │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    subgraph Platform["DEVSECOPS PLATFORM"]
+        direction TB
+        
+        subgraph Scanners["Security Scanners"]
+            direction LR
+            SAST[SAST<br/>Scanner]
+            DAST[DAST<br/>Scanner]
+            SEC[Secrets<br/>Scanner]
+            IAC[IaC<br/>Scanner]
+        end
+        
+        AI[AI Assistant<br/>oh-my-opencode-slim<br/>Analysis]
+        
+        subgraph Outputs["Integrations"]
+            direction LR
+            SIEM[SIEM<br/>Splunk<br/>Datadog]
+            TKT[Ticketing<br/>Jira]
+            CICD[CI/CD<br/>Pipeline]
+        end
+        
+        Scanners --> AI
+        AI --> SIEM
+        AI --> TKT
+        AI --> CICD
+    end
+    
+    style Platform fill:#1f2937,stroke:#333,stroke-width:2px,color:#fff
+    style Scanners fill:#059669,stroke:#333,stroke-width:1px
+    style SAST fill:#059669,stroke:#333,stroke-width:1px
+    style DAST fill:#059669,stroke:#333,stroke-width:1px
+    style SEC fill:#dc2626,stroke:#333,stroke-width:1px
+    style IAC fill:#059669,stroke:#333,stroke-width:1px
+    style AI fill:#7c3aed,stroke:#333,stroke-width:2px,color:#fff
+    style Outputs fill:#d97706,stroke:#333,stroke-width:1px
+    style SIEM fill:#d97706,stroke:#333,stroke-width:1px
+    style TKT fill:#d97706,stroke:#333,stroke-width:1px
+    style CICD fill:#d97706,stroke:#333,stroke-width:1px
 ```
 
 ### Data Flow Security
 
-```
-User Input → Local Filter → AI Assistant → Local Sanitization → Output
-                │                              │
-                ▼                              ▼
-          ┌──────────┐                  ┌──────────┐
-          │ .gitignore│                  │ Command  │
-          │ Patterns  │                  │ Review   │
-          │ PII Filter│                  │ (Human)  │
-          └──────────┘                  └──────────┘
+```mermaid
+flowchart LR
+    subgraph Input["User Input"]
+        direction LR
+        UI[User<br/>Input]
+    end
+    
+    subgraph Filter1["Local Filter"]
+        direction TB
+        F1[.gitignore<br/>Patterns<br/>PII Filter]
+    end
+    
+    subgraph AI["AI Assistant"]
+        direction TB
+        A[oh-my-opencode-slim<br/>Analysis]
+    end
+    
+    subgraph Filter2["Local Sanitization"]
+        direction TB
+        F2[Command<br/>Review<br/>Human]
+    end
+    
+    subgraph Output["Output"]
+        direction LR
+        O[Output]
+    end
+    
+    UI --> F1 --> A --> F2 --> O
+    
+    style Input fill:#1f2937,stroke:#333,stroke-width:1px
+    style UI fill:#059669,stroke:#333,stroke-width:1px
+    style Filter1 fill:#d97706,stroke:#333,stroke-width:1px
+    style F1 fill:#d97706,stroke:#333,stroke-width:1px
+    style AI fill:#7c3aed,stroke:#333,stroke-width:2px,color:#fff
+    style A fill:#7c3aed,stroke:#333,stroke-width:2px,color:#fff
+    style Filter2 fill:#d97706,stroke:#333,stroke-width:1px
+    style F2 fill:#d97706,stroke:#333,stroke-width:1px
+    style Output fill:#1f2937,stroke:#333,stroke-width:1px
+    style O fill:#059669,stroke:#333,stroke-width:1px
 ```
 
 ## Configuration Architecture
