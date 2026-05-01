@@ -1,0 +1,210 @@
+{
+  "$schema": "https://raw.githubusercontent.com/alvinunreal/oh-my-opencode-slim/main/schema.json",
+  "version": "2.1.0",
+  "description": "DevSecOps-optimized configuration for opencode-go subscription — using only available models (Apr 2026)",
+
+  "orchestrator": {
+    "model": "opencode-go/kimi-k2.6",
+    "temperature": 0.3,
+    "system_prompt": "You are a DevSecOps orchestrator running on opencode-go. Route security tasks to appropriate agents, enforce least privilege, and ensure all security changes are audited. Never auto-execute destructive operations. Prefer parallel execution for independent tasks.",
+    "max_tokens": 8000
+  },
+
+  "agents": {
+    "explorer": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "temperature": 0.1,
+      "system_prompt": "You are a security-focused codebase explorer. Map attack surfaces, find secrets, inventory IaC resources. Be thorough but fast. Report findings in structured format with file paths and line numbers.",
+      "max_tokens": 4000,
+      "tools": ["view", "ls", "grep", "glob"],
+      "blocked_paths": [
+        "*.pem",
+        "*.key",
+        ".env*",
+        "secrets/",
+        "~/.aws/",
+        "~/.ssh/",
+        "~/.kube/config"
+      ]
+    },
+
+    "librarian": {
+      "model": "opencode-go/kimi-k2.5",
+      "temperature": 0.1,
+      "system_prompt": "You are a security research librarian. Fetch CVEs, compliance requirements, and threat intelligence. Always cite sources, provide confidence levels, and include CVSS scores when available.",
+      "mcp_servers": ["security-advisories", "nvd-api", "mitre-attack"],
+      "cache_ttl": 3600
+    },
+
+    "oracle": {
+      "model": "opencode-go/kimi-k2.6",
+      "temperature": 0.2,
+      "system_prompt": "You are a senior security architect. Provide strategic security guidance, assess risk, and review architectures. Be conservative in risk acceptance. Document all assumptions. Prioritize by exploitability and blast radius.",
+      "max_tokens": 16000,
+      "tools": ["view", "read", "grep"],
+      "require_approval_for": ["security-acceptance", "risk-acceptance"]
+    },
+
+    "fixer": {
+      "model": "opencode-go/deepseek-v4-pro",
+      "temperature": 0.1,
+      "system_prompt": "You are a security remediation engineer. Fix vulnerabilities safely. Prefer non-breaking changes. Test fixes when possible. Never introduce new vulnerabilities. Write tests for every fix.",
+      "tools": ["view", "read", "edit", "write", "bash"],
+      "blocked_tools": ["execute", "delete"],
+      "require_approval_for": ["edit", "write", "bash"],
+      "auto_test": true
+    },
+
+    "designer": {
+      "model": "opencode-go/qwen3.6-plus",
+      "temperature": 0.4,
+      "system_prompt": "You are a security UI/UX designer. Create dashboards, documentation, and security interfaces. Focus on clarity, actionability, and severity indicators. Structure outputs for both technical and executive audiences.",
+      "tools": ["view", "write"]
+    },
+
+    "council": {
+      "models": [
+        "opencode-go/kimi-k2.6",
+        "opencode-go/deepseek-v4-pro",
+        "opencode-go/glm-5.1"
+      ],
+      "consensus_threshold": 0.66,
+      "system_prompt": "You are a security council. Validate critical security decisions. Flag disagreements. Require unanimous consent for high-risk acceptance. Provide dissenting opinions when models disagree.",
+      "use_for": ["risk-assessment", "compliance-validation", "incident-severity"]
+    }
+  },
+
+  "security": {
+    "mode": "strict",
+    "read_only_default": true,
+    "max_file_size": "1MB",
+    "blocked_extensions": [
+      ".pem", ".key", ".p12", ".pfx",
+      ".env", ".env.local", ".env.production"
+    ],
+    "blocked_patterns": [
+      "password.*=.*",
+      "secret.*=.*",
+      "token.*=.*",
+      "private_key.*=.*",
+      "AKIA[0-9A-Z]{16}",
+      "-----BEGIN .* PRIVATE KEY-----"
+    ],
+    "audit_logging": {
+      "enabled": true,
+      "level": "detailed",
+      "destination": "~/.local/share/opencode/audit/",
+      "include_context": false,
+      "retention_days": 90
+    },
+    "prompt_injection_detection": true,
+    "secret_detection": true
+  },
+
+  "workflows": {
+    "security-audit": {
+      "description": "Full security audit workflow",
+      "steps": [
+        { "agent": "explorer", "task": "map attack surface and inventory all IaC, containers, and dependencies" },
+        { "agent": "librarian", "task": "research current threats and CVEs for discovered technologies" },
+        { "agent": "oracle", "task": "assess risk and prioritize findings by exploitability and blast radius" },
+        { "agent": "fixer", "task": "remediate auto-fixable issues with tests" },
+        { "agent": "council", "task": "validate high-risk findings and approve remediation plan" }
+      ]
+    },
+
+    "incident-response": {
+      "description": "Security incident response following NIST SP 800-61",
+      "steps": [
+        { "agent": "explorer", "task": "immediate reconnaissance — find affected systems and map blast radius", "priority": "p0" },
+        { "agent": "librarian", "task": "research attack vectors and mitigation strategies", "priority": "p0" },
+        { "agent": "oracle", "task": "strategic response plan — containment and eradication options", "priority": "p0" },
+        { "agent": "fixer", "task": "execute containment and eradication", "priority": "p0", "require_approval": true },
+        { "agent": "designer", "task": "document incident timeline and generate post-mortem template", "priority": "p1" }
+      ]
+    },
+
+    "compliance-check": {
+      "description": "Compliance assessment against SOC 2 / ISO 27001 / NIST CSF",
+      "steps": [
+        { "agent": "librarian", "task": "fetch compliance requirements and map to controls" },
+        { "agent": "explorer", "task": "scan IaC for compliance evidence and gaps" },
+        { "agent": "oracle", "task": "gap analysis — current state vs required state" },
+        { "agent": "fixer", "task": "implement missing controls and update policies" },
+        { "agent": "council", "task": "validate compliance posture" }
+      ]
+    },
+
+    "dependency-update": {
+      "description": "Automated dependency vulnerability management",
+      "steps": [
+        { "agent": "explorer", "task": "discover all dependencies and lockfiles" },
+        { "agent": "librarian", "task": "check for CVEs and security advisories" },
+        { "agent": "oracle", "task": "assess update risk — breaking changes vs security benefit" },
+        { "agent": "fixer", "task": "update dependencies and verify builds pass" },
+        { "agent": "council", "task": "validate high-risk dependency updates" }
+      ]
+    }
+  },
+
+  "mcp_servers": {
+    "security-advisories": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@security/mcp-advisories"],
+      "env": {
+        "NVD_API_KEY": "${NVD_API_KEY}"
+      }
+    },
+    "github-security": {
+      "type": "http",
+      "url": "https://api.github.com/advisories",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}"
+      }
+    },
+    "terraform-docs": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@hashicorp/mcp-terraform"]
+    },
+    "kubernetes-api": {
+      "type": "stdio",
+      "command": "kubectl",
+      "args": ["mcp-server"]
+    },
+    "trivy-scanner": {
+      "type": "stdio",
+      "command": "trivy",
+      "args": ["mcp-server"]
+    }
+  },
+
+  "cost_optimization": {
+    "explorer": { "max_cost_per_session": 0.05 },
+    "librarian": { "max_cost_per_session": 0.30 },
+    "oracle": { "max_cost_per_session": 3.00 },
+    "fixer": { "max_cost_per_session": 1.50 },
+    "designer": { "max_cost_per_session": 0.50 },
+    "council": { "max_cost_per_session": 6.00 }
+  },
+
+  "model_routing": {
+    "description": "Three-tier routing using only opencode-go subscription models",
+    "tier_1_lightweight": {
+      "models": ["opencode-go/deepseek-v4-flash", "opencode-go/qwen3.5-plus", "opencode-go/minimax-m2.5"],
+      "use_for": ["classification", "routing", "file_reads", "docstrings", "simple_grep", "secret_scanning"],
+      "target_percentage": 80
+    },
+    "tier_2_mid": {
+      "models": ["opencode-go/deepseek-v4-pro", "opencode-go/qwen3.6-plus", "opencode-go/minimax-m2.7", "opencode-go/glm-5.1"],
+      "use_for": ["code_generation", "feature_implementation", "code_review", "documentation", "compliance_mapping"],
+      "target_percentage": 15
+    },
+    "tier_3_frontier": {
+      "models": ["opencode-go/kimi-k2.6", "opencode-go/mimo-v2.5-pro"],
+      "use_for": ["architecture_decisions", "complex_debugging", "cross_system_design", "incident_command"],
+      "target_percentage": 5
+    }
+  }
+}
