@@ -1,0 +1,47 @@
+baseURL = 'https://adurrr.github.io/ai-devsecops-workflows'
+defaultContentLanguage = 'en'
+title = 'AI-Assisted DevSecOps Workflows'
+theme = 'github.com/google/docsy'
+
+[params]
+  copyright = "AI-Assisted DevSecOps Workflows Authors"
+  privacy_policy = "https://adurrr.github.io/ai-devsecops-workflows/privacy/"
+
+  # Repository links for "Edit this page" and "Create issue"
+  github_repo = "https://github.com/adurrr/ai-devsecops-workflows"
+  github_subdir = "docs-site"
+  github_branch = "main"
+
+  # Docsy theme settings
+  offlineSearch = true
+
+  [params.ui]
+    breadcrumb_disable = false
+    navbar_logo = false
+    sidebar_menu_compact = false
+    sidebar_search_disable = false
+    showLightDarkModeMenu = true
+
+  [params.links]
+    [[params.links.user]]
+      name = "GitHub"
+      url = "https://github.com/adurrr/ai-devsecops-workflows"
+      icon = "fab fa-github"
+      desc = "View the project on GitHub"
+
+[menu]
+  [[menu.main]]
+    name = "Documentation"
+    weight = 10
+    url = "docs/"
+    pre = "<i class='fas fa-book'></i>"
+  [[menu.main]]
+    name = "GitHub"
+    weight = 50
+    url = "https://github.com/adurrr/ai-devsecops-workflows"
+    pre = "<i class='fab fa-github'></i>"
+
+[module]
+  proxy = "direct"
+  [[module.imports]]
+    path = "github.com/google/docsy"

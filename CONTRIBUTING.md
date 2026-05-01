@@ -58,7 +58,7 @@ All contributions must:
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/ai-devsecops-workflows.git
+git clone https://github.com/adurrr/ai-devsecops-workflows.git
 cd ai-devsecops-workflows
 
 # Install pre-commit hooks
