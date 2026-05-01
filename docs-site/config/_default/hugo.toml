@@ -20,6 +20,7 @@ theme = 'github.com/google/docsy'
     navbar_logo = false
     sidebar_menu_compact = false
     sidebar_search_disable = false
+    showLightDarkModeMenu = true
 
   [params.links]
     [[params.links.user]]
