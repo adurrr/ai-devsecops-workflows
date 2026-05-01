@@ -1,4 +1,4 @@
-baseURL = 'https://adurrr.github.io/ai-devsecops-workflows'
+baseURL = 'https://adurrr.github.io/ai-devsecops-workflows/'
 defaultContentLanguage = 'en'
 title = 'AI-Assisted DevSecOps Workflows'
 theme = 'github.com/google/docsy'
