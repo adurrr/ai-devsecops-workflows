@@ -32,6 +32,7 @@ Explore the full documentation at **[adurrr.github.io/ai-devsecops-workflows](ht
 | [Paradigms](https://adurrr.github.io/ai-devsecops-workflows/docs/paradigms/) | Different approaches to AI-assisted DevSecOps |
 | [Use Cases](https://adurrr.github.io/ai-devsecops-workflows/docs/use-cases/) | Practical examples and patterns |
 | [Secure PR Review](https://adurrr.github.io/ai-devsecops-workflows/docs/secure-pr-review/) | Pre-PR AI-assisted security review |
+| [Python Developer](https://adurrr.github.io/ai-devsecops-workflows/docs/python-developer/) | Modern Python development workflow with security-first practices |
 | [Research](https://adurrr.github.io/ai-devsecops-workflows/docs/research/) | Comprehensive research findings |
 
 ## Core Philosophy
