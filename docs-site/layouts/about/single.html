@@ -1,0 +1,21 @@
+{{ define "main" }}
+<div class="td-content">
+  <div class="about-hero py-5 mb-5 bg-light border-bottom">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10 text-center">
+          <h1 class="display-5 fw-bold">{{ .Title }}</h1>
+          <p class="lead text-muted mt-3">{{ .Params.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container pb-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        {{ .Content }}
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}
