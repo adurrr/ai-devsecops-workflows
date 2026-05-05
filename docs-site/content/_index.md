@@ -50,6 +50,20 @@ This site documents approaches, paradigms, and best practices for DevSecOps engi
   Comprehensive research findings: framework landscape, cost analysis, and implementation recommendations.
   {{< /blocks/feature >}}
 </div>
+
+<div class="row text-center mt-5">
+  {{< blocks/feature icon="fa-shield-halved" title="Secure PR Review" url="docs/secure-pr-review" >}}
+  Run a 5-step AI-assisted security review over your branch changes before they reach code review.
+  {{< /blocks/feature >}}
+
+  {{< blocks/feature icon="fa-server" title="DevOps Stack" url="docs/devops-stack" >}}
+  Comprehensive developer workflow guide for Terraform, Kubernetes, Ansible, Prometheus, Grafana, Loki, and ELK.
+  {{< /blocks/feature >}}
+
+  {{< blocks/feature icon="fa-python" title="Python Developer" url="docs/python-developer" >}}
+  Modern Python development workflow with uv, Ruff, Pytest, FastAPI/Django, Docker, and security-first practices.
+  {{< /blocks/feature >}}
+</div>
 {{< /blocks/section >}}
 
 {{< blocks/section color="dark" type="container" >}}

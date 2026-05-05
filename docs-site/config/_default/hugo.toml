@@ -41,6 +41,11 @@ theme = 'github.com/google/docsy'
     url = "docs/"
     pre = "<i class='fas fa-book'></i>"
   [[menu.main]]
+    name = "About"
+    weight = 20
+    url = "about/"
+    pre = "<i class='fas fa-circle-info'></i>"
+  [[menu.main]]
     name = "GitHub"
     weight = 50
     url = "https://github.com/adurrr/ai-devsecops-workflows"

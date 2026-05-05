@@ -61,18 +61,14 @@ All contributions must:
 git clone https://github.com/adurrr/ai-devsecops-workflows.git
 cd ai-devsecops-workflows
 
-# Install pre-commit hooks
+# Install pre-commit hooks (if configured)
 pre-commit install
-
-# Validate configurations
-./scripts/validate-configs.sh
 ```
 
 ## Questions?
 
-- Open a GitHub Discussion for general questions
-- Join our community Slack (link in README)
-- Contact maintainers: devsecops@example.com
+- Open a [GitHub Discussion](https://github.com/adurrr/ai-devsecops-workflows/discussions) for general questions
+- Review existing [GitHub Issues](https://github.com/adurrr/ai-devsecops-workflows/issues) before reporting new bugs
 
 ## Code of Conduct
 
