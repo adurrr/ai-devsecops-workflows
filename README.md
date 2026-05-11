@@ -35,6 +35,14 @@ Explore the full documentation at **[adurrr.github.io/ai-devsecops-workflows](ht
 | [Python Developer](https://adurrr.github.io/ai-devsecops-workflows/docs/python-developer/) | Modern Python development workflow with security-first practices |
 | [Research](https://adurrr.github.io/ai-devsecops-workflows/docs/research/) | Comprehensive research findings |
 
+### Production Configurations
+
+| Configuration | Description |
+|---------------|-------------|
+| [`homelab-prod-go.json`](./configs/oh-my-opencode-slim/) | Production-ready OpenCode Go config for K3s + OpenTofu + ArgoCD/Flux GitOps |
+| [`devsecops-go.json`](./configs/oh-my-opencode-slim/) | Core DevSecOps config (v2.1.0) — OpenCode Go subscription models only |
+| [`devsecops.json`](./configs/oh-my-opencode-slim/) | Multi-provider DevSecOps config (v1.0.0) — OpenAI, Cerebras, Fireworks |
+
 ## Core Philosophy
 
 ### Security-First AI Integration

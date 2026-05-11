@@ -1,0 +1,360 @@
+{
+  "$schema": "https://raw.githubusercontent.com/alvinunreal/oh-my-opencode-slim/main/schema.json",
+  "version": "3.0.0-homelab",
+  "description": "Production-ready homelab configuration for opencode-go subscription. DevSecOps + GitOps optimized for K3s, Terraform, ArgoCD/Flux, and infrastructure-as-code workflows.",
+
+  "orchestrator": {
+    "model": "opencode-go/kimi-k2.6",
+    "fallback_chain": ["opencode-go/glm-5.1", "opencode-go/deepseek-v4-pro", "opencode-go/qwen3.6-plus"],
+    "temperature": 0.3,
+    "system_prompt": "You are a DevSecOps/GitOps orchestrator for a production homelab. Route infrastructure, security, and deployment tasks to appropriate agents. Enforce least privilege, GitOps discipline (declare > imperative), and audit all changes. Never auto-execute destructive operations against production clusters. Prefer parallel execution for independent tasks. Always validate manifests with schema checks before recommending apply.",
+    "max_tokens": 16000,
+    "gitops_guardrails": {
+      "block_imperative_kubectl": true,
+      "require_pr_for_production": true,
+      "enforce_dry_run_before_apply": true
+    }
+  },
+
+  "agents": {
+    "explorer": {
+      "model": "opencode-go/deepseek-v4-flash",
+      "fallback_chain": ["opencode-go/qwen3.5-plus", "opencode-go/minimax-m2.5"],
+      "temperature": 0.1,
+      "system_prompt": "You are a homelab infrastructure explorer. Inventory Terraform, Ansible, Kubernetes manifests, Helm charts, and Docker Compose files. Map network policies, ingress rules, storage classes, and secret references. Detect hardcoded credentials, overly permissive RBAC, exposed services, and missing resource limits. Report with exact file paths, line numbers, and Kubernetes apiVersion/kind where applicable.",
+      "max_tokens": 8000,
+      "tools": ["view", "ls", "grep", "glob", "read"],
+      "blocked_paths": [
+        "*.pem", "*.key", "*.p12", "*.pfx",
+        ".env*", "secrets/", "sealed-secrets/",
+        "~/.aws/", "~/.ssh/", "~/.kube/config",
+        "~/.config/opencode/", "~/.1password/"
+      ]
+    },
+
+    "librarian": {
+      "model": "opencode-go/kimi-k2.5",
+      "fallback_chain": ["opencode-go/qwen3.6-plus", "opencode-go/mimo-v2.5"],
+      "temperature": 0.1,
+      "system_prompt": "You are a homelab DevSecOps research librarian. Fetch CVEs, Kubernetes security advisories, CIS benchmarks, and Terraform provider security notices. Map findings to compliance frameworks (NIST CSF, CIS Kubernetes v1.8, SOC 2). Always cite sources with URLs, provide CVSS v3.1 scores, and note if a vulnerability is exploitable in homelab/K3s contexts. Cache threat intel for 1 hour.",
+      "mcp_servers": ["security-advisories", "nvd-api", "mitre-attack", "github-security", "trivy-scanner"],
+      "cache_ttl": 3600
+    },
+
+    "oracle": {
+      "model": "opencode-go/glm-5.1",
+      "fallback_chain": ["opencode-go/kimi-k2.6", "opencode-go/deepseek-v4-pro"],
+      "temperature": 0.2,
+      "system_prompt": "You are a senior homelab SRE and security architect. Assess infrastructure risk, review Terraform plans for blast radius, validate Kubernetes security contexts, and design zero-trust network policies. Be conservative with risk acceptance. Document all assumptions. Prioritize by exploitability × blast radius × data sensitivity. Recommend GitOps-native solutions over imperative fixes.",
+      "max_tokens": 16000,
+      "tools": ["view", "read", "grep"],
+      "require_approval_for": ["security-acceptance", "risk-acceptance", "architecture-change", "production-deploy"]
+    },
+
+    "fixer": {
+      "model": "opencode-go/deepseek-v4-pro",
+      "fallback_chain": ["opencode-go/qwen3.6-plus", "opencode-go/glm-5"],
+      "temperature": 0.1,
+      "system_prompt": "You are a homelab infrastructure security engineer. Fix IaC misconfigurations, patch CVEs in Dockerfiles, tighten Kubernetes RBAC and network policies, and refactor OpenTofu for least privilege. Prefer non-breaking changes. Always add resource limits, security contexts, and readOnlyRootFilesystem where possible. Write validation tests (helm lint, tofu validate, kubeconform) for every fix. Never store secrets in Git; use External Secrets Operator or Sealed Secrets references.",
+      "tools": ["view", "read", "edit", "write", "bash"],
+      "blocked_tools": ["execute", "delete"],
+      "require_approval_for": ["edit", "write", "bash"],
+      "auto_test": true,
+      "test_commands": ["tofu validate", "helm lint .", "kubeconform -strict"]
+    },
+
+    "designer": {
+      "model": "opencode-go/qwen3.6-plus",
+      "fallback_chain": ["opencode-go/mimo-v2.5-pro", "opencode-go/kimi-k2.5"],
+      "temperature": 0.4,
+      "system_prompt": "You are a homelab DevSecOps documentation designer. Create runbooks, architecture diagrams (Mermaid), compliance dashboards, and incident timelines. Focus on clarity, actionability, and severity indicators. Include kubectl/helm/opentofu commands where relevant. Structure outputs for both technical operators and homelab documentation sites (Hugo/MkDocs).",
+      "tools": ["view", "write", "read"]
+    },
+
+    "council": {
+      "models": [
+        "opencode-go/kimi-k2.6",
+        "opencode-go/glm-5.1",
+        "opencode-go/deepseek-v4-pro"
+      ],
+      "consensus_threshold": 0.66,
+      "system_prompt": "You are a homelab security council. Validate critical infrastructure decisions including Kubernetes upgrades, Terraform state migrations, network policy changes, and GitOps repository restructuring. Flag disagreements. Require unanimous consent for high-risk acceptance or production cluster changes. Provide dissenting opinions when models disagree. Prefer rollback-safe strategies.",
+      "use_for": ["risk-assessment", "compliance-validation", "incident-severity", "cluster-upgrade", "state-migration"]
+    }
+  },
+
+  "security": {
+    "mode": "strict",
+    "read_only_default": true,
+    "max_file_size": "2MB",
+    "blocked_extensions": [
+      ".pem", ".key", ".p12", ".pfx",
+      ".env", ".env.local", ".env.production", ".envrc"
+    ],
+    "blocked_patterns": [
+      "password\\s*=\\s*[^${]",
+      "secret\\s*=\\s*[^${]",
+      "token\\s*=\\s*[^${]",
+      "private_key\\s*=\\s*",
+      "AKIA[0-9A-Z]{16}",
+      "-----BEGIN .* PRIVATE KEY-----",
+      "api[_-]?key\\s*:\\s*['\"]?[a-zA-Z0-9]{20,}",
+      "-----BEGIN OPENSSH PRIVATE KEY-----"
+    ],
+    "audit_logging": {
+      "enabled": true,
+      "level": "detailed",
+      "destination": "~/.local/share/opencode/audit/homelab/",
+      "include_context": false,
+      "retention_days": 180,
+      "ship_to": "loki"
+    },
+    "prompt_injection_detection": true,
+    "secret_detection": true,
+    "sensitive_resource_warnings": {
+      "tofu_destroy": true,
+      "kubectl_delete_namespace": true,
+      "helm_uninstall": true,
+      "docker_system_prune": true
+    }
+  },
+
+  "workflows": {
+    "security-audit": {
+      "description": "Full DevSecOps audit of homelab infrastructure",
+      "steps": [
+        { "agent": "explorer", "task": "inventory all Terraform, Ansible, K8s manifests, Helm charts, Dockerfiles, and Compose files; map attack surface including ingresses, services, and RBAC" },
+        { "agent": "librarian", "task": "research CVEs and security advisories for discovered technologies, providers, and base images" },
+        { "agent": "oracle", "task": "assess risk and prioritize findings by exploitability, blast radius, and data sensitivity in homelab context" },
+        { "agent": "fixer", "task": "remediate auto-fixable IaC and K8s misconfigurations with validation tests" },
+        { "agent": "council", "task": "validate high-risk findings and approve remediation plan" }
+      ]
+    },
+
+    "incident-response": {
+      "description": "Security incident response for homelab following NIST SP 800-61",
+      "steps": [
+        { "agent": "explorer", "task": "immediate reconnaissance — identify affected pods, nodes, namespaces, and map blast radius via labels and network policies", "priority": "p0" },
+        { "agent": "librarian", "task": "research attack vectors, IOCs, and mitigation strategies for detected compromise indicators", "priority": "p0" },
+        { "agent": "oracle", "task": "strategic response plan — containment (isolate namespace / cordon node), eradication (replace pods / rotate secrets), and recovery options", "priority": "p0" },
+        { "agent": "fixer", "task": "execute containment via GitOps (suspend ArgoCD app / pause Flux Kustomization) and prepare remediation manifests", "priority": "p0", "require_approval": true },
+        { "agent": "designer", "task": "document incident timeline, generate post-mortem template, and update runbooks", "priority": "p1" }
+      ]
+    },
+
+    "compliance-check": {
+      "description": "Compliance assessment against CIS Kubernetes, NIST CSF, and SOC 2 for homelab",
+      "steps": [
+        { "agent": "librarian", "task": "fetch latest CIS Kubernetes Benchmark v1.8+ and NIST CSF controls applicable to K3s homelabs" },
+        { "agent": "explorer", "task": "scan IaC and K8s manifests for compliance evidence, missing pod security standards, and network policy gaps" },
+        { "agent": "oracle", "task": "gap analysis — current state vs required controls; assess feasibility in resource-constrained homelab" },
+        { "agent": "fixer", "task": "implement missing controls as GitOps manifests (Kyverno policies, Pod Security Admissions, NetworkPolicies)" },
+        { "agent": "council", "task": "validate compliance posture and approve exceptions with risk documentation" }
+      ]
+    },
+
+    "dependency-update": {
+      "description": "Automated dependency and base image vulnerability management",
+      "steps": [
+        { "agent": "explorer", "task": "discover all dependencies, lockfiles, Helm chart versions, and container image tags" },
+        { "agent": "librarian", "task": "check for CVEs, security advisories, and end-of-life notices for discovered versions" },
+        { "agent": "oracle", "task": "assess update risk — breaking changes vs security benefit; recommend update order (OS → runtime → app)" },
+        { "agent": "fixer", "task": "update versions in Terraform providers, Helm values, Dockerfiles, and package files; validate with plan/lint/build" },
+        { "agent": "council", "task": "validate high-risk updates (Kubernetes minor version bumps, major Helm chart changes)" }
+      ]
+    },
+
+    "secure-pr-review": {
+      "description": "Pre-PR security review for GitOps repositories — run before every pull request",
+      "steps": [
+        { "agent": "explorer", "task": "scan changed files for secrets, hardcoded credentials, overly permissive RBAC, missing resource limits, and insecure container configurations" },
+        { "agent": "librarian", "task": "check new or updated dependencies, container images, and Terraform providers for known CVEs and advisories" },
+        { "agent": "oracle", "task": "threat model the infrastructure delta — assess security impact of K8s/Terraform changes on network exposure and privilege escalation" },
+        { "agent": "fixer", "task": "auto-fix detectable issues (add security contexts, tighten RBAC, pin image digests) and write validation tests", "require_approval": true },
+        { "agent": "designer", "task": "generate a security summary markdown block for the PR description with severity badges" }
+      ]
+    },
+
+    "gitops-deploy": {
+      "description": "Validate and prepare a GitOps deployment for ArgoCD or Flux",
+      "steps": [
+        { "agent": "explorer", "task": "validate changed manifests against K8s schemas, check for namespace conflicts, and verify secret references exist" },
+        { "agent": "oracle", "task": "review deployment for blast radius, rollback strategy, and canary/blue-green feasibility" },
+        { "agent": "fixer", "task": "fix manifest issues, add missing labels/annotations for GitOps tracking, and ensure image digests are pinned" },
+        { "agent": "designer", "task": "generate deployment notes with kubectl apply --dry-run=server commands and rollback instructions" }
+      ]
+    },
+
+    "iac-hardening": {
+      "description": "Harden Terraform and Ansible configurations for production homelab",
+      "steps": [
+        { "agent": "explorer", "task": "scan Terraform for hardcoded secrets, missing encryption, overly permissive security groups, and public S3 buckets; scan Ansible for privilege escalation issues" },
+        { "agent": "oracle", "task": "assess IaC against CIS benchmarks and Well-Architected security pillars; identify state file exposure risks" },
+        { "agent": "fixer", "task": "remediate with remote state encryption, least-privilege IAM, SOPS integration, and validation tests" },
+        { "agent": "council", "task": "validate state-breaking changes and approve migration plan if needed" }
+      ]
+    },
+
+    "drift-detection": {
+      "description": "Detect and reconcile infrastructure drift in GitOps workflows",
+      "steps": [
+        { "agent": "explorer", "task": "run tofu plan and compare live K8s resources against Git state; identify drifted resources" },
+        { "agent": "oracle", "task": "analyze drift root cause (manual changes, failed syncs, provider bugs) and assess reconciliation risk" },
+        { "agent": "fixer", "task": "prepare GitOps reconciliation manifests or Terraform imports to restore desired state without data loss" },
+        { "agent": "designer", "task": "document drift findings and update runbooks to prevent recurrence" }
+      ]
+    },
+
+    "secret-rotation": {
+      "description": "Rotate secrets and credentials via GitOps without downtime",
+      "steps": [
+        { "agent": "explorer", "task": "inventory all ExternalSecret, SealedSecret, VaultSecret, and cert-manager Certificate resources; identify rotation schedules" },
+        { "agent": "oracle", "task": "design rotation strategy with zero-downtime ordering (certs → DB creds → API keys → service tokens)" },
+        { "agent": "fixer", "task": "update rotation manifests, trigger cert-manager renewals, and verify pod restarts pick up new secrets" },
+        { "agent": "designer", "task": "update secret inventory and rotation calendar documentation" }
+      ]
+    }
+  },
+
+  "mcp_servers": {
+    "security-advisories": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@security/mcp-advisories"],
+      "env": { "NVD_API_KEY": "${NVD_API_KEY}" }
+    },
+    "github-security": {
+      "type": "http",
+      "url": "https://api.github.com/advisories",
+      "headers": { "Authorization": "Bearer ${GITHUB_TOKEN}" }
+    },
+    "trivy-scanner": {
+      "type": "stdio",
+      "command": "trivy",
+      "args": ["mcp-server"],
+      "description": "Container image, IaC, and filesystem vulnerability scanning. Requires Trivy CLI installed."
+    },
+    "semgrep-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@semgrep/mcp"],
+      "env": { "SEMGREP_APP_TOKEN": "${SEMGREP_APP_TOKEN}" },
+      "description": "SAST/SCA/secrets scanning with 5000+ rules. Runs on every file agent generates."
+    },
+    "opentofu-mcp-server": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@opentofu/opentofu-mcp-server"],
+      "description": "OpenTofu official MCP. Registry search for providers, modules, resources, and data sources."
+    },
+    "kubectl-mcp-server": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "kubectl-mcp-server"],
+      "env": { "KUBECONFIG": "${KUBECONFIG}" },
+      "description": "253+ K8s tools including GitOps (ArgoCD/Flux), Helm, Cilium, Istio, KEDA, cert-manager, and security audit prompts."
+    },
+    "argocd-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@argoproj-labs/mcp-for-argocd"],
+      "env": { "ARGOCD_AUTH_TOKEN": "${ARGOCD_AUTH_TOKEN}", "ARGOCD_SERVER": "${ARGOCD_SERVER}" },
+      "description": "Official ArgoCD MCP. App sync, resource tree inspection, drift detection, managed resources, logs. Read-only mode available.",
+      "read_only": true
+    },
+    "flux-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@controlplane/flux-mcp-server"],
+      "description": "Official Flux MCP. Kustomization/HelmRelease status, reconciliation errors, dependency diagrams, root cause analysis.",
+      "read_only": true
+    }
+  },
+
+  "lsp_recommendations": {
+    "description": "Language servers to install for optimal AI-assisted homelab DevSecOps. OpenCode auto-discovers many; these extend K8s/IaC support.",
+    "required": [
+      {
+        "name": "terraform-ls",
+        "source": "hashicorp/terraform-ls",
+        "purpose": "Terraform/OpenTofu IntelliSense, go-to-definition, formatting, and validation for .tf, .tfvars, .tfdeploy.hcl (syntax-compatible with OpenTofu)"
+      },
+      {
+        "name": "yaml-ls-k8s",
+        "source": "bl4ko/yaml-ls-k8s",
+        "purpose": "Auto-detects apiVersion/kind in YAML and fetches correct K8s JSON schema. Supports 600+ CRDs (Argo, Istio, cert-manager)."
+      },
+      {
+        "name": "helm-ls",
+        "source": "mrjosh/helm-ls",
+        "purpose": "Helm template LSP with .Values completion, go-to-definition, hover docs, and helm lint integration"
+      },
+      {
+        "name": "docker-language-server",
+        "source": "docker/docker-language-server",
+        "purpose": "Dockerfile, Compose, and Bake file support with Docker Scout vulnerability info on hover"
+      }
+    ],
+    "optional": [
+      {
+        "name": "sysdig-lsp",
+        "source": "sysdiglabs/sysdig-lsp",
+        "purpose": "Real-time vulnerability scanning in-editor for Dockerfiles, K8s manifests, and IaC with SBOM generation"
+      },
+      {
+        "name": "ansible-language-server",
+        "source": "ansible/ansible-language-server",
+        "purpose": "Ansible playbook validation, module completion, and linting for configuration management"
+      }
+    ]
+  },
+
+  "cost_optimization": {
+    "explorer": { "max_cost_per_session": 0.05, "escalate_to": "opencode-go/deepseek-v4-pro" },
+    "librarian": { "max_cost_per_session": 0.30, "escalate_to": "opencode-go/kimi-k2.6" },
+    "oracle": { "max_cost_per_session": 3.00, "escalate_to": "opencode-go/glm-5.1" },
+    "fixer": { "max_cost_per_session": 1.50, "escalate_to": "opencode-go/kimi-k2.6" },
+    "designer": { "max_cost_per_session": 0.50, "escalate_to": "opencode-go/qwen3.6-plus" },
+    "council": { "max_cost_per_session": 6.00, "escalate_to": "opencode-go/kimi-k2.6" }
+  },
+
+  "model_routing": {
+    "description": "Three-tier routing optimized for opencode-go homelab subscription limits ($12/5h, $30/wk, $60/mo)",
+    "tier_1_lightweight": {
+      "models": ["opencode-go/deepseek-v4-flash", "opencode-go/qwen3.5-plus", "opencode-go/minimax-m2.5"],
+      "use_for": ["classification", "routing", "file_reads", "docstrings", "simple_grep", "secret_scanning",       "tofu_fmt", "yaml_lint"],
+      "target_percentage": 80
+    },
+    "tier_2_mid": {
+      "models": ["opencode-go/deepseek-v4-pro", "opencode-go/qwen3.6-plus", "opencode-go/minimax-m2.7", "opencode-go/glm-5.1", "opencode-go/mimo-v2.5-pro"],
+      "use_for": ["code_generation", "feature_implementation", "code_review", "documentation", "compliance_mapping", "helm_chart_design", "tofu_refactor"],
+      "target_percentage": 15
+    },
+    "tier_3_frontier": {
+      "models": ["opencode-go/kimi-k2.6", "opencode-go/glm-5.1"],
+      "use_for": ["architecture_decisions", "complex_debugging", "cross_system_design", "incident_command", "state_migration", "disaster_recovery_planning"],
+      "target_percentage": 5
+    }
+  },
+
+  "homelab_context": {
+      "default_platforms": ["k3s", "opentofu", "ansible", "argocd", "flux"],
+    "recommended_tools": {
+      "orchestration": "k3s",
+      "gitops_cd": "argocd or flux",
+      "iac": "opentofu + ansible",
+      "secrets": "external-secrets-operator + hashicorp-vault or 1password-connect",
+      "monitoring": "kube-prometheus-stack (prometheus + grafana + loki)",
+      "ingress": "traefik or ingress-nginx",
+      "backup": "velero + minio",
+      "policy_enforcement": "kyverno or gatekeeper",
+      "container_scanning": "trivy",
+      "sast": "semgrep"
+    },
+    "gitops_repositories": {
+      "apps": "git@github.com:youruser/homelab-apps.git",
+      "infra": "git@github.com:youruser/homelab-infra.git",
+      "policies": "git@github.com:youruser/homelab-policies.git"
+    }
+  }
+}
