@@ -40,7 +40,7 @@ Explore the full documentation at **[adurrr.github.io/ai-devsecops-workflows](ht
 | Configuration | Description |
 |---------------|-------------|
 | [`homelab-prod-go.json`](./configs/oh-my-opencode-slim/) | Production-ready OpenCode Go config for K3s + OpenTofu + ArgoCD/Flux GitOps |
-| [`devsecops-go.json`](./configs/oh-my-opencode-slim/) | Core DevSecOps config (v2.1.0) — OpenCode Go subscription models only |
+| [`devsecops-go.json`](./configs/oh-my-opencode-slim/) | OMS preset — agent model/skill/MCP routing for OpenCode Go subscription |
 | [`devsecops.json`](./configs/oh-my-opencode-slim/) | Multi-provider DevSecOps config (v1.0.0) — OpenAI, Cerebras, Fireworks |
 
 ## Core Philosophy

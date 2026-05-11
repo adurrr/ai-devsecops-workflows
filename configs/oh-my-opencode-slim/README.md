@@ -11,9 +11,58 @@
 
 | File | Purpose |
 |------|---------|
-| `homelab-prod-go.json` | Main OpenCode configuration (agents, workflows, MCPs, model routing) |
+| `homelab-prod-go.json` | Full OpenCode configuration (agents, workflows, MCPs, model routing, security guardrails) |
+| `devsecops-go.json` | **oh-my-opencode-slim preset** — agent model/skill/MCP assignments only |
 | `homelab-prod-go-mcps.md` | MCP & LSP review — what to install, why, and what's excluded |
 | `homelab-prod-go-usage.md` | Step-by-step installation, testing, and troubleshooting guide |
+
+### Which config should I use?
+
+| Scenario | Recommended Config |
+|----------|-------------------|
+| **Full control** — workflows, security guardrails, cost caps, approval gates | `homelab-prod-go.json` |
+| **oh-my-opencode-slim (OMS)** — simple preset-based agent routing | `devsecops-go.json` |
+
+---
+
+## Preset: `devsecops-go`
+
+For [oh-my-opencode-slim](https://github.com/alvinunreal/oh-my-opencode-slim) users, `devsecops-go.json` provides a clean preset that maps the homelab model strategy into OMS format.
+
+```bash
+# Use with oh-my-opencode-slim
+bunx oh-my-opencode-slim@latest install --config ./devsecops-go.json
+```
+
+### Agent Mapping
+
+| Agent | Model | Variant | Skills | MCPs |
+|-------|-------|---------|--------|------|
+| **Orchestrator** | `opencode-go/kimi-k2.6` | high | `*` | `*` |
+| **Oracle** | `opencode-go/glm-5.1` | max | `simplify` | — |
+| **Council** | `opencode-go/deepseek-v4-pro` | high | — | — |
+| **Librarian** | `opencode-go/kimi-k2.5` | low | — | `websearch`, `context7`, `grep_app`, `security-advisories`, `github-security` |
+| **Explorer** | `opencode-go/deepseek-v4-flash` | low | — | — |
+| **Designer** | `opencode-go/qwen3.6-plus` | medium | `agent-browser` | — |
+| **Fixer** | `opencode-go/deepseek-v4-pro` | high | — | `semgrep-mcp`, `trivy-scanner`, `opentofu-mcp-server` |
+| **Observer** | `opencode-go/qwen3.5-plus` | low | — | `kubectl-mcp-server`, `argocd-mcp`, `flux-mcp` |
+
+### OMS Preset vs Full Config
+
+The preset format (`devsecops-go.json`) is **minimal** — it only controls which model, skills, and MCPs each agent uses. The full config (`homelab-prod-go.json`) adds:
+
+| Feature | Full Config | OMS Preset |
+|---------|-------------|------------|
+| Workflows (9 predefined) | ✅ | ❌ |
+| Security guardrails (blocked paths, secret detection) | ✅ | ❌ |
+| Approval gates (fixer/oracle) | ✅ | ❌ |
+| Cost caps & escalation | ✅ | ❌ |
+| Model routing tiers | ✅ | ❌ |
+| Fallback chains | ✅ | ❌ |
+| System prompts | ✅ | ❌ |
+| Audit logging config | ✅ | ❌ |
+
+**Recommendation:** Use `devsecops-go.json` if you prefer OMS preset simplicity. Use `homelab-prod-go.json` if you need workflows, security guardrails, and cost controls.
 
 ---
 
