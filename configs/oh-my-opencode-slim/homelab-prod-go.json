@@ -236,10 +236,10 @@
     },
     "semgrep-mcp": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@semgrep/mcp"],
+      "command": "semgrep",
+      "args": ["mcp"],
       "env": { "SEMGREP_APP_TOKEN": "${SEMGREP_APP_TOKEN}" },
-      "description": "SAST/SCA/secrets scanning with 5000+ rules. Runs on every file agent generates."
+      "description": "SAST/SCA/secrets scanning with 5000+ rules. Requires semgrep CLI installed (brew install semgrep). Alternative: hosted https://mcp.semgrep.ai/mcp"
     },
     "opentofu-mcp-server": {
       "type": "stdio",

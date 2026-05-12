@@ -74,7 +74,8 @@ brew install node kubernetes-cli helm opentofu
 brew install aquasecurity/trivy/trivy
 
 # 2. Install MCP servers
-npm install -g @semgrep/mcp @opentofu/opentofu-mcp-server kubectl-mcp-server
+brew install semgrep
+npm install -g @opentofu/opentofu-mcp-server kubectl-mcp-server
 
 # 3. Export required environment variables
 export NVD_API_KEY="your-key"

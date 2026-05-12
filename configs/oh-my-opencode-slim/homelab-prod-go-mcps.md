@@ -11,7 +11,7 @@
 
 | MCP | Install | Why Include | Caveats |
 |-----|---------|-------------|---------|
-| **semgrep-mcp** | `npx -y @semgrep/mcp` | Best-in-class SAST with 5000+ rules. Can scan every file the agent generates and prompt regeneration until clean. Native integration with Claude Code / Cursor patterns. | Requires `SEMGREP_APP_TOKEN` for Pro rules. Free tier covers 200 CI jobs/month. |
+| **semgrep-mcp** | `semgrep mcp` | Best-in-class SAST with 5000+ rules. Can scan every file the agent generates and prompt regeneration until clean. Native integration with Claude Code / Cursor patterns. | Requires `semgrep` CLI (brew/pipx) + `SEMGREP_APP_TOKEN` for Pro rules. Free tier covers 200 CI jobs/month. Alternative: hosted `https://mcp.semgrep.ai/mcp`. |
 | **trivy-scanner** | `trivy mcp-server` | Unified scanner: container images, IaC (Terraform/K8s), filesystem, SBOM generation. Essential for shift-left DevSecOps in homelab. | Requires Trivy CLI >= 0.55. Ensure `trivy` is in `$PATH`. |
 | **security-advisories** | `npx -y @security/mcp-advisories` | NVD/MITRE feed aggregation. Fast CVE lookups. | Needs `NVD_API_KEY` (free from NVD). Rate-limited without key. |
 | **github-security** | HTTP endpoint | GitHub Advisory Database. Better coverage for OSS packages and GHSA identifiers. | Needs `GITHUB_TOKEN` with `security_events` read scope. |
@@ -188,7 +188,9 @@ If you are currently using `devsecops-go.json` (v2.1.0):
 
 1. **Copy** `homelab-prod-go.json` alongside it.
 2. **Export** the environment variables listed in Section 3.
-3. **Install** MCP dependencies: `npm install -g @semgrep/mcp @opentofu/opentofu-mcp-server kubectl-mcp-server`
+3. **Install** MCP dependencies:
+   - `npm install -g @opentofu/opentofu-mcp-server kubectl-mcp-server`
+   - `brew install semgrep` (for Semgrep MCP — PyPI package, not npm)
 4. **Install** Trivy: https://aquasecurity.github.io/trivy/latest/getting-started/installation/
 5. **Install** LSPs: terraform-ls (syntax-compatible with OpenTofu), yaml-ls-k8s, helm-ls, docker-language-server
 6. **Test** with a dry-run: `opencode --config ./homelab-prod-go.json --workflow drift-detection --dry-run`

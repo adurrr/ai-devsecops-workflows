@@ -44,7 +44,11 @@ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/inst
 
 ```bash
 # Install globally so opencode can spawn them via stdio
-npm install -g @semgrep/mcp @opentofu/opentofu-mcp-server kubectl-mcp-server @argoproj-labs/mcp-for-argocd @controlplane/flux-mcp-server
+npm install -g @opentofu/opentofu-mcp-server kubectl-mcp-server @argoproj-labs/mcp-for-argocd @controlplane/flux-mcp-server
+
+# Semgrep MCP (Python/PyPI, not npm)
+brew install semgrep        # macOS
+# or: pipx install semgrep  # cross-platform
 
 # Verify they are in $PATH
 which semgrep-mcp
@@ -200,7 +204,7 @@ echo "=== Trivy ==="
 trivy --version
 
 echo "=== Semgrep MCP ==="
-npx -y @semgrep/mcp --help | head -5
+semgrep mcp --help | head -5
 
 echo "=== HashiCorp Terraform MCP ==="
 npx -y @opentofu/opentofu-mcp-server --help | head -5
