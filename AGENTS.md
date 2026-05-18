@@ -42,7 +42,12 @@ User Request
 ├── "fix vulnerability in Dockerfile"    → Fixer
 ├── "create compliance dashboard"        → Designer
 ├── "high-risk architecture change"      → Oracle → Council
-└── "incident response, P0"              → Parallel: Explorer + Librarian + Oracle
+├── "incident response, P0"              → Parallel: Explorer + Librarian + Oracle
+├── "analyze Prometheus metrics"         → Observer
+├── "query Loki logs for root cause"     → Observer
+├── "build Grafana dashboard"           → Observer + Designer
+├── "investigate performance incident"  → Observer + Oracle
+└── "observability stack health check"   → observer workflow
 ```
 
 ---
@@ -173,6 +178,39 @@ User Request
 - Incident severity classification
 - Any fix that modifies authentication or authorization
 
+### Observer — Observability & Monitoring Engineer
+
+| Property | Value |
+|----------|-------|
+| **Role** | Live observability management — metrics, logs, traces, dashboards, alerts, SLOs |
+| **Typical Tasks** | Query Prometheus metrics, analyze Loki/ELK logs, create Grafana dashboards, configure Alertmanager rules, investigate tracing data, compute SLO/SLI burn rates |
+| **Tools** | `view`, `read`, `grep`, `query`, `bash` (read-only queries) |
+| **MCP Servers** | `prometheus-mcp`, `grafana-mcp`, `loki-mcp`, `opentelemetry-mcp` |
+
+**Observability Domains:**
+
+| Domain | Tool | Query Language | Use Case |
+|--------|------|----------------|----------|
+| **Metrics** | Prometheus / Thanos | PromQL | Infrastructure & app metrics, alerting, SLOs |
+| **Logs** | Loki / ELK | LogQL / KQL / Lucene | Operational debugging, audit trails, security forensics |
+| **Traces** | OpenTelemetry / Jaeger | TraceQL | Distributed tracing, latency analysis, dependency maps |
+| **Dashboards** | Grafana / Kibana | — | Unified visualization, multi-source correlation |
+| **Alerting** | Alertmanager / Grafana Alerts | — | Alert routing, silencing, escalation policies |
+
+**Integration with other agents:**
+- **Explorer** → Discover services missing metrics endpoints, ServiceMonitors, or logging
+- **Oracle** → Architecture review of observability pipeline, cost vs retention decisions
+- **Fixer** → Implement missing ServiceMonitors, PrometheusRules, dashboard ConfigMaps
+- **Designer** → Dashboard UX refinement, runbook creation, incident timeline visualization
+- **Librarian** → Research OpenTelemetry collector configs, best practices for specific stacks
+
+**Example Prompts:**
+- "Query Prometheus for the top 5 CPU-consuming namespaces in the last 6 hours"
+- "Analyze Loki logs to find the root cause of the 500 errors in the payment service"
+- "Create a Grafana dashboard for service latency with SLO burn rate panels"
+- "Review the Alertmanager config — are there any missing severity labels?"
+- "Trace a single request through the microservice mesh using OpenTelemetry spans"
+
 ---
 
 ## Predefined Workflows
@@ -210,6 +248,17 @@ steps:
   5. council:    "Validate compliance posture"
 ```
 
+### Workflow: `observability-review`
+
+```yaml
+steps:
+  1. observer:   "Analyze current observability stack — metrics coverage, log retention, alert rules, dashboard freshness" (P1)
+  2. explorer:   "Discover services missing metrics endpoints, ServiceMonitors, PodMonitors, or log shipping config" (P1)
+  3. oracle:     "Assess observability gaps, retention vs cost trade-offs, SLO feasibility" (P1)
+  4. fixer:      "Implement missing ServiceMonitors, PrometheusRules, dashboard ConfigMaps, and log shipping" (P1, require_approval: true)
+  5. designer:   "Create or update runbooks, incident response timelines, and operational dashboards" (P2)
+```
+
 ---
 
 ## Security & Compliance Guardrails
@@ -233,6 +282,7 @@ steps:
 | Orchestrator | ✅ | ❌ | ❌ | ❌ | — |
 | Explorer | ✅ | ❌ | ❌ | ❌ | — |
 | Librarian | ✅ (external) | ❌ | ❌ | ❌ | — |
+| Observer | ✅ | ❌ | ❌ | ❌ | — |
 | Oracle | ✅ | ❌ | ❌ | ❌ | — |
 | Fixer | ✅ | ✅ | ⚠️ | ❌ | edit, write, bash |
 | Designer | ✅ | ✅ | ❌ | ❌ | write |
@@ -246,6 +296,7 @@ steps:
 
 - **Explorer** — `configs/`, `examples/`, `docs/architecture.md`, `docs/security.md`
 - **Librarian** — `docs/frameworks.md`, `docs/research.md`, external sources via MCP
+- **Observer** — `docs/devops-stack.md` (observability section), Prometheus/Loki/ELK configs, Grafana dashboards as code
 - **Oracle** — `docs/architecture.md`, `docs/security.md`, `configs/security-policies/`
 - **Fixer** — `examples/`, `configs/`, source files needing modification
 - **Designer** — `docs/`, `README.md`, `CONTRIBUTING.md`
@@ -274,6 +325,7 @@ iac-scan-results/ # generated during scans
 |-------|-----------|----------------------|------------------|
 | Explorer | Ultra-cheap (DeepSeek V4 Flash) | ~$0.03 | Never — read-only |
 | Librarian | Cheap (Kimi K2.5) | ~$0.15 | Complex multi-source research |
+| Observer | Mid-tier (DeepSeek V4 Pro) | ~$0.40 | Cross-system observability correlation |
 | Fixer | Mid-tier (DeepSeek V4 Pro) | ~$0.40 | Cross-system refactor |
 | Oracle | Frontier (Kimi K2.6) | ~$1.50 | Architecture review |
 | Designer | Cheap (Qwen 3.6 Plus) | ~$0.15 | Complex dashboard |
@@ -284,8 +336,8 @@ iac-scan-results/ # generated during scans
 ## Maintenance
 
 - **Review cycle**: Quarterly
-- **Last updated**: April 2026
-- **Version**: 1.0.0
+- **Last updated**: May 2026
+- **Version**: 1.1.0
 - **Owner**: DevSecOps team
 
 When updating this file, ensure all agent configurations in `configs/oh-my-opencode-slim/` remain synchronized.

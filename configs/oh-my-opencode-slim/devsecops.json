@@ -61,6 +61,16 @@
       "tools": ["view", "write"]
     },
 
+    "observer": {
+      "model": "openai/gpt-5.4-mini",
+      "temperature": 0.2,
+      "system_prompt": "You are an observability and monitoring engineer. Query Prometheus metrics, analyze Loki/ELK logs, create Grafana dashboards, and configure alerting rules. Investigate performance issues and SLO compliance. Prefer read-only queries against live systems.",
+      "tools": ["view", "read", "grep", "bash"],
+      "blocked_tools": ["execute", "delete"],
+      "require_approval_for": ["bash"],
+      "mcp_servers": ["prometheus-mcp", "grafana-mcp", "loki-mcp", "opentelemetry-mcp"]
+    },
+
     "council": {
       "models": [
         "openai/gpt-5.4",
@@ -141,6 +151,17 @@
         { "agent": "fixer", "task": "auto-fix detectable issues and write security tests", "require_approval": true },
         { "agent": "designer", "task": "generate a security summary markdown block for the PR description" }
       ]
+    },
+
+    "observability-review": {
+      "description": "Full observability stack review — metrics coverage, log retention, alert rules, dashboards",
+      "steps": [
+        { "agent": "observer", "task": "analyze metrics coverage, log retention, alert rules, and dashboard freshness" },
+        { "agent": "explorer", "task": "discover services missing metrics endpoints, ServiceMonitors, or log shipping config" },
+        { "agent": "oracle", "task": "assess observability gaps, retention vs cost trade-offs, SLO feasibility" },
+        { "agent": "fixer", "task": "implement missing ServiceMonitors, PrometheusRules, dashboard ConfigMaps", "require_approval": true },
+        { "agent": "designer", "task": "create or update runbooks and operational dashboards" }
+      ]
     }
   },
 
@@ -169,12 +190,47 @@
       "type": "stdio",
       "command": "kubectl",
       "args": ["mcp-server"]
+    },
+
+    "prometheus-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@prometheus-community/mcp-server"],
+      "env": {
+        "PROMETHEUS_URL": "${PROMETHEUS_URL}"
+      }
+    },
+    "grafana-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@grafana/mcp-server"],
+      "env": {
+        "GRAFANA_URL": "${GRAFANA_URL}",
+        "GRAFANA_API_KEY": "${GRAFANA_API_KEY}"
+      }
+    },
+    "loki-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@loki/mcp-server"],
+      "env": {
+        "LOKI_URL": "${LOKI_URL}"
+      }
+    },
+    "opentelemetry-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@opentelemetry/mcp-server"],
+      "env": {
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "${OTEL_EXPORTER_OTLP_ENDPOINT}"
+      }
     }
   },
 
   "cost_optimization": {
     "explorer": { "max_cost_per_session": 0.50 },
     "librarian": { "max_cost_per_session": 1.00 },
+    "observer": { "max_cost_per_session": 1.00 },
     "oracle": { "max_cost_per_session": 5.00 },
     "fixer": { "max_cost_per_session": 2.00 },
     "council": { "max_cost_per_session": 10.00 }

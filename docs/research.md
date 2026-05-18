@@ -57,7 +57,7 @@
 **Core Innovation**: Instead of forcing one model to do everything, route each part of the job to the agent best suited for it, balancing quality, speed, and cost.
 
 **Key Capabilities**:
-- 7 specialized agents (The Pantheon)
+- 8 specialized agents (The Pantheon)
 - Mixed-provider setups (each agent can use different LLM)
 - Auto-delegation based on task characteristics
 - Council mode for multi-model consensus
@@ -163,6 +163,7 @@ User Request → Orchestrator → Route to Specialist Agent → Execute → Veri
 | **Orchestrator** | Master delegator | GPT-5.4 | High | Task routing, context management |
 | **Explorer** | Codebase recon | GPT-5.4-mini | Low | Fast codebase scanning |
 | **Librarian** | Knowledge retrieval | GPT-5.4-mini | Low | Documentation lookup |
+| **Observer** | Observability engineer | GPT-5.4-mini | Low | PromQL/LogQL queries, dashboards, alert analysis |
 | **Oracle** | Strategic advisor | GPT-5.4 (high) | High | Architecture decisions |
 | **Designer** | UI/UX implementation | GPT-5.4-mini | Medium | Frontend work |
 | **Fixer** | Implementation | GPT-5.4-mini | Low | Code changes, tests |
@@ -175,6 +176,7 @@ The Orchestrator uses built-in rules to determine routing:
 **Auto-delegate to:**
 - **Explorer**: Codebase discovery, search, mapping
 - **Librarian**: Library docs, API lookups, research
+- **Observer**: Prometheus/Loki queries, Grafana dashboards, alert analysis, SLO monitoring
 - **Oracle**: Architecture decisions, complex debugging, code review
 - **Designer**: UI/UX work, visual polish
 - **Fixer**: Bounded implementation, test writing

@@ -64,13 +64,17 @@
         ]
       },
       "observer": {
-        "model": "opencode-go/qwen3.5-plus",
+        "model": "opencode-go/deepseek-v4-pro",
         "variant": "low",
         "skills": [],
         "mcps": [
           "kubectl-mcp-server",
           "argocd-mcp",
-          "flux-mcp"
+          "flux-mcp",
+          "prometheus-mcp",
+          "grafana-mcp",
+          "loki-mcp",
+          "opentelemetry-mcp"
         ]
       }
     }

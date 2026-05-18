@@ -15,15 +15,15 @@ When using **oh-my-opencode-slim**, each agent maps to specific DevSecOps respon
   │ Orchestrator │ ← Main interface, routes tasks
   └──────┬───────┘
          │
-    ┌────┴────┬─────────┬─────────┬─────────┬─────────┐
-    ▼         ▼         ▼         ▼         ▼         ▼
-┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
-│Explorer│ │Librarian│ │Oracle │ │Fixer  │ │Designer│ │Council│
-└───┬───┘ └────┬──┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘
-    │          │        │         │         │         │
-    ▼          ▼        ▼         ▼         ▼         ▼
- Codebase   External  Strategic Implementation  UI/UX  Multi-model
- Mapping    Research  Architecture   Tasks     Polish  Consensus
+    ┌────┴────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+    ▼         ▼         ▼         ▼         ▼         ▼         ▼
+┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐ ┌───────┐
+│Explorer│ │Librarian│ │Observer│ │Oracle │ │Fixer  │ │Designer│ │Council│
+└───┬───┘ └────┬──┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘ └───┬───┘
+    │          │        │         │         │         │         │
+    ▼          ▼        ▼         ▼         ▼         ▼         ▼
+ Codebase   External  Observability Strategic Implementation  UI/UX  Multi-model
+ Mapping    Research  Live Queries  Architecture   Tasks     Polish  Consensus
 ```
 
 ### Agent Responsibilities in DevSecOps
@@ -33,6 +33,7 @@ When using **oh-my-opencode-slim**, each agent maps to specific DevSecOps respon
 | **Orchestrator** | Security Coordinator | Task routing, context management, final decisions |
 | **Explorer** | Asset Discovery | Map attack surface, find secrets, inventory IaC |
 | **Librarian** | Threat Intel | CVE lookups, security advisory research, compliance docs |
+| **Observer** | Observability Engineer | Prometheus/Loki/ELK querying, Grafana dashboards, alert analysis, SLO monitoring |
 | **Oracle** | Security Architect | Risk assessment, threat modeling, architecture review |
 | **Fixer** | Remediation Engineer | Auto-patch vulnerabilities, update configs, refactor code |
 | **Designer** | Security UX | Security dashboards, alert interfaces, documentation |

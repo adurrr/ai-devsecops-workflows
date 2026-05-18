@@ -65,7 +65,7 @@ tags: ["research", "frameworks", "cost-analysis", "integration", "devsecops", "a
 **Core Innovation**: Instead of forcing one model to do everything, route each part of the job to the agent best suited for it, balancing quality, speed, and cost.
 
 **Key Capabilities**:
-- 7 specialized agents (The Pantheon)
+- 8 specialized agents (The Pantheon)
 - Mixed-provider setups (each agent can use different LLM)
 - Auto-delegation based on task characteristics
 - Council mode for multi-model consensus

@@ -17,14 +17,14 @@ Three primary paradigms have emerged for integrating AI assistants into DevSecOp
                     │ Orchestrator │
                     └──────┬───────┘
                            │
-        ┌─────────┬────────┼────────┬─────────┐
-        ▼         ▼        ▼        ▼         ▼
-    ┌───────┐ ┌───────┐ ┌──────┐ ┌──────┐ ┌──────┐
-    │Explorer│ │Librarian│ │Oracle│ │Fixer │ │Council│
-    └───────┘ └───────┘ └──────┘ └──────┘ └──────┘
-       │          │        │        │        │
-       ▼          ▼        ▼        ▼        ▼
-    Discovery  Research  Strategy  Execute  Validate
+    ┌─────────┬────────┬──────────┬────────┬─────────┬─────────┐
+    ▼         ▼         ▼          ▼        ▼         ▼
+┌───────┐ ┌───────┐ ┌────────┐ ┌──────┐ ┌──────┐ ┌───────┐ ┌──────┐
+│Explorer│ │Librarian│ │Observer│ │Oracle│ │Fixer │ │Designer│ │Council│
+└───────┘ └───────┘ └────────┘ └──────┘ └──────┘ └───────┘ └──────┘
+   │          │         │         │        │         │         │
+   ▼          ▼         ▼         ▼        ▼         ▼         ▼
+Discovery  Research  Observability Strategy  Execute   UI/UX   Validate
 ```
 
 ### When to Use

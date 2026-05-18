@@ -1762,7 +1762,9 @@ graph TB
 | **Linting** | Pre-commit review | "Review this playbook for ansible-lint violations and best practices" |
 | **Inventory management** | Dynamic inventory scripts | "Write a dynamic inventory script that fetches EC2 instances tagged with 'Environment=production'" |
 
-### 9.5 AI-Assisted Observability Workflow
+### 9.5 AI-Assisted Observability Workflow (Observer Agent)
+
+The **Observer** agent specializes in live observability management — querying metrics, analyzing logs, creating dashboards, and tuning alerts. Use it directly or as part of the `observability-review` workflow.
 
 | Task | AI Assistant Role | Example Prompt |
 |------|------------------|----------------|
