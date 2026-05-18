@@ -45,7 +45,7 @@ bunx oh-my-opencode-slim@latest install --config ./devsecops-go.json
 | **Explorer** | `opencode-go/deepseek-v4-flash` | low | — | — |
 | **Designer** | `opencode-go/qwen3.6-plus` | medium | `agent-browser` | — |
 | **Fixer** | `opencode-go/deepseek-v4-pro` | high | — | `semgrep-mcp`, `trivy-scanner`, `opentofu-mcp-server` |
-| **Observer** | `opencode-go/qwen3.5-plus` | low | — | `kubectl-mcp-server`, `argocd-mcp`, `flux-mcp` |
+| **Observer** | `opencode-go/deepseek-v4-pro` | low | — | `kubectl-mcp-server`, `argocd-mcp`, `flux-mcp`, `prometheus-mcp`, `grafana-mcp`, `loki-mcp`, `opentelemetry-mcp` |
 
 ### OMS Preset vs Full Config
 

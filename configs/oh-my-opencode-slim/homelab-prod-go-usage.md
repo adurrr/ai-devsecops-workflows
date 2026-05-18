@@ -384,7 +384,28 @@ tail -f ~/.local/share/opencode/audit/homelab/$(date +%Y-%m-%d).log
 grep -r "cost\|tokens\|model" ~/.local/share/opencode/audit/homelab/ | tail -20
 ```
 
-### 8.3 Prometheus Metrics (Optional)
+### 8.3 Observer Agent — Observability Queries
+
+The **Observer** agent can query live observability systems. Test it with:
+
+```bash
+# Query Prometheus metrics
+opencode --config homelab-prod-go.json agent observer run \
+  "Query the top 5 namespaces by CPU usage in the last hour"
+
+# Investigate logs with LogQL
+opencode --config homelab-prod-go.json agent observer run \
+  "Find all 5xx errors in the api-gateway namespace from the last 30 minutes"
+
+# Check alerting health
+opencode --config homelab-prod-go.json agent observer run \
+  "List all firing alerts and summarize by severity"
+
+# Run full observability review
+opencode --config homelab-prod-go.json workflow run observability-review
+```
+
+### 8.4 Prometheus Metrics (Optional)
 
 If you have the OpenCode metrics exporter enabled:
 
@@ -483,7 +504,9 @@ Don't switch everything at once. Use this phased approach:
 # Daily Commands
 opencode --config homelab-prod-go.json agent explorer run "..."
 opencode --config homelab-prod-go.json agent librarian run "..."
+opencode --config homelab-prod-go.json agent observer run "..."
 opencode --config homelab-prod-go.json workflow run security-audit --dry-run
+opencode --config homelab-prod-go.json workflow run observability-review
 
 # Weekly Commands
 opencode --config homelab-prod-go.json workflow run dependency-update

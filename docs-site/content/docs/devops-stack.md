@@ -1772,7 +1772,9 @@ graph TB
 | **Linting** | Pre-commit review | "Review this playbook for ansible-lint violations and best practices" |
 | **Inventory management** | Dynamic inventory scripts | "Write a dynamic inventory script that fetches EC2 instances tagged with 'Environment=production'" |
 
-### 9.5 AI-Assisted Observability Workflow
+### 9.5 AI-Assisted Observability Workflow (Observer Agent)
+
+The **Observer** agent specializes in live observability management — querying metrics, analyzing logs, creating dashboards, and tuning alerts. Use it directly or as part of the `observability-review` workflow.
 
 | Task | AI Assistant Role | Example Prompt |
 |------|------------------|----------------|
@@ -1788,7 +1790,10 @@ Several tools now provide **Model Context Protocol (MCP)** servers for direct AI
 
 | Tool | MCP Server | Capability |
 |------|-----------|------------|
+| **Prometheus** | [prometheus-mcp](https://github.com/prometheus-community/mcp-server) | Query metrics with PromQL, inspect alert rules and targets |
+| **Grafana** | [grafana-mcp](https://github.com/grafana/grafana-mcp) | Create/update dashboards as code, manage datasources and alerts |
 | **Grafana Loki** | [loki-mcp](https://github.com/grafana/loki-mcp) | Query Loki logs through AI agents |
+| **OpenTelemetry** | [opentelemetry-mcp](https://github.com/open-telemetry/opentelemetry-mcp) | TraceQL queries, span analysis, service dependency graphs |
 | **ArgoCD** | [mcp-for-argocd](https://github.com/argoproj-labs/mcp-for-argocd) | Manage GitOps applications via natural language |
 | **Terraform** | Various community MCPs | Plan, apply, and manage infrastructure |
 

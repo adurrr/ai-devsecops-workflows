@@ -28,11 +28,12 @@ Agent orchestration plugin that routes tasks to specialized AI agents ("The Pant
 |-------|--------------|---------|-------|------|
 | Orchestrator | GPT-5.4 | Master delegator & coordinator | Medium | Medium |
 | Explorer | GPT-5.4-mini | Codebase reconnaissance | Fast | Low |
-| Oracle | GPT-5.4 (high) | Strategic advisor, architecture | Slow | High |
-| Council | Config-driven | Multi-LLM consensus | Slow | High |
 | Librarian | GPT-5.4-mini | External documentation lookup | Fast | Low |
+| Observer | GPT-5.4-mini | Observability & monitoring live queries | Medium | Low |
+| Oracle | GPT-5.4 (high) | Strategic advisor, architecture | Slow | High |
 | Designer | GPT-5.4-mini | UI/UX implementation | Medium | Low |
 | Fixer | Various | Fast implementation | Fast | Low |
+| Council | Config-driven | Multi-LLM consensus | Slow | High |
 
 #### DevSecOps Strengths
 - **Specialized security analysis**: Oracle for architecture review, Explorer for attack surface mapping

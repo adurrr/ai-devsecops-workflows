@@ -29,6 +29,7 @@ flowchart TD
     
     O --> E[Explorer<br/>Codebase<br/>Mapping]
     O --> L[Librarian<br/>External<br/>Research]
+    O --> Ob[Observer<br/>Observability<br/>Live Queries]
     O --> Or[Oracle<br/>Strategic<br/>Architecture]
     O --> F[Fixer<br/>Implementation<br/>Tasks]
     O --> D[Designer<br/>UI/UX<br/>Polish]
@@ -38,6 +39,7 @@ flowchart TD
     style O fill:#7c3aed,stroke:#333,stroke-width:2px,color:#fff
     style E fill:#059669,stroke:#333,stroke-width:1px
     style L fill:#059669,stroke:#333,stroke-width:1px
+    style Ob fill:#059669,stroke:#333,stroke-width:1px
     style Or fill:#059669,stroke:#333,stroke-width:1px
     style F fill:#059669,stroke:#333,stroke-width:1px
     style D fill:#059669,stroke:#333,stroke-width:1px
@@ -51,6 +53,7 @@ flowchart TD
 | **Orchestrator** | Security Coordinator | Task routing, context management, final decisions |
 | **Explorer** | Asset Discovery | Map attack surface, find secrets, inventory IaC |
 | **Librarian** | Threat Intel | CVE lookups, security advisory research, compliance docs |
+| **Observer** | Observability Engineer | Prometheus/Loki/ELK querying, Grafana dashboards, alert analysis, SLO monitoring |
 | **Oracle** | Security Architect | Risk assessment, threat modeling, architecture review |
 | **Fixer** | Remediation Engineer | Auto-patch vulnerabilities, update configs, refactor code |
 | **Designer** | Security UX | Security dashboards, alert interfaces, documentation |

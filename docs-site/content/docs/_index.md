@@ -35,7 +35,7 @@ New to AI-assisted DevSecOps? We recommend reading in this order:
 
 ## Quick Reference
 
-- **Agent Pantheon**: Orchestrator, Explorer, Librarian, Oracle, Fixer, Designer, Council
+- **Agent Pantheon**: Orchestrator, Explorer, Librarian, Observer, Oracle, Fixer, Designer, Council
 - **Core Principle**: Security-first — verify before execute, least privilege, audit trail
 - **Primary Tools**: oh-my-opencode-slim, opencode-go/crush, Aider, ShellGPT, AIChat
 

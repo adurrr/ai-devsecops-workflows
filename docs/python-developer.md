@@ -1496,6 +1496,7 @@ graph TB
 |-------|-------------------------|---------------|
 | **Explorer** | Map Python attack surface | Find dependencies, secrets, exposed endpoints, vulnerable packages |
 | **Librarian** | Research Python CVEs | Look up CVE details for Python packages, check Bandit rules |
+| **Observer** | Monitor Python app health | Query app metrics, analyze error logs, create performance dashboards, set up SLO alerts |
 | **Oracle** | Assess architecture security | Review FastAPI/Django security, evaluate auth patterns |
 | **Fixer** | Auto-fix security issues | Fix Bandit findings, update vulnerable dependencies |
 | **Designer** | Create compliance dashboards | Python dependency compliance, security metrics |
@@ -1553,6 +1554,13 @@ What are the critical CVEs we need to address?"
 "Review this FastAPI application for security vulnerabilities.
 Check for: authentication, authorization, input validation,
 SQL injection, and dependency vulnerabilities."
+```
+
+**Observer Agent**:
+```
+"Query the Prometheus metrics for my FastAPI app — show me request latency
+percentiles and error rates over the last hour. Also check if any alert rules
+are firing for this namespace."
 ```
 
 **Fixer Agent**:

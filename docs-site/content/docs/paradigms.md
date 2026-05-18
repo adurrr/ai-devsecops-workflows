@@ -36,8 +36,10 @@ flowchart TD
         direction LR
         E[Explorer]:::agent
         L[Librarian]:::agent
+        Ob[Observer]:::agent
         Or[Oracle]:::agent
         F[Fixer]:::agent
+        Ds[Designer]:::agent
         C[Council]:::agent
     end
 
@@ -45,28 +47,36 @@ flowchart TD
         direction LR
         D[Discovery]:::task
         R[Research]:::task
+        O[Observability]:::task
         S[Strategy]:::task
         Ex[Execute]:::task
+        U[UI/UX]:::task
         V[Validate]:::task
     end
 
     O --> Agents
     E --> D
     L --> R
+    Ob --> O
     Or --> S
     F --> Ex
+    Ds --> U
     C --> V
 
     style O fill:#6366f1,stroke:#333,stroke-width:2px,color:#fff
     style E fill:#10b981,stroke:#333,stroke-width:1px
     style L fill:#10b981,stroke:#333,stroke-width:1px
+    style Ob fill:#10b981,stroke:#333,stroke-width:1px
     style Or fill:#10b981,stroke:#333,stroke-width:1px
     style F fill:#10b981,stroke:#333,stroke-width:1px
+    style Ds fill:#10b981,stroke:#333,stroke-width:1px
     style C fill:#f59e0b,stroke:#333,stroke-width:1px
     style D fill:#e5e7eb,stroke:#333,stroke-width:1px
     style R fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style ObT fill:#e5e7eb,stroke:#333,stroke-width:1px
     style S fill:#e5e7eb,stroke:#333,stroke-width:1px
     style Ex fill:#e5e7eb,stroke:#333,stroke-width:1px
+    style U fill:#e5e7eb,stroke:#333,stroke-width:1px
     style V fill:#e5e7eb,stroke:#333,stroke-width:1px
 ```
 

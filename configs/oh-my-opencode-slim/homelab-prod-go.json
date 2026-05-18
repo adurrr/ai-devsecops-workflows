@@ -71,6 +71,18 @@
       "tools": ["view", "write", "read"]
     },
 
+    "observer": {
+      "model": "opencode-go/deepseek-v4-pro",
+      "fallback_chain": ["opencode-go/qwen3.6-plus", "opencode-go/kimi-k2.5"],
+      "temperature": 0.2,
+      "system_prompt": "You are a homelab observability and monitoring engineer. Query Prometheus for metrics and SLO burn rates, analyze Loki/ELK logs with LogQL for root cause analysis, create Grafana dashboards as code, and review Alertmanager routing rules. Investigate cluster-wide performance incidents by correlating metrics, logs, and traces. Compute SLI compliance and recommend retention vs cost trade-offs. Prefer read-only queries against live monitoring systems. Flag missing ServiceMonitors, PodMonitors, and log shipping configurations.",
+      "max_tokens": 8000,
+      "tools": ["view", "read", "grep", "bash"],
+      "blocked_tools": ["execute", "delete"],
+      "require_approval_for": ["bash"],
+      "mcp_servers": ["prometheus-mcp", "grafana-mcp", "loki-mcp", "opentelemetry-mcp", "kubectl-mcp-server"]
+    },
+
     "council": {
       "models": [
         "opencode-go/kimi-k2.6",
@@ -213,6 +225,17 @@
         { "agent": "fixer", "task": "update rotation manifests, trigger cert-manager renewals, and verify pod restarts pick up new secrets" },
         { "agent": "designer", "task": "update secret inventory and rotation calendar documentation" }
       ]
+    },
+
+    "observability-review": {
+      "description": "Full observability stack health check — metrics coverage, log retention, alerting hygiene, dashboard drift, SLO compliance",
+      "steps": [
+        { "agent": "observer", "task": "query Prometheus for metric cardinality, scrape target health, and alert rule coverage; analyze Loki log retention and volume by namespace; review Alertmanager routing and silences; check Grafana dashboard drift and datasource connectivity; compute SLO/SLI burn rates for critical services" },
+        { "agent": "explorer", "task": "scan K8s manifests for missing ServiceMonitors, PodMonitors, PrometheusRules, and GrafanaDashboard resources; check container resource metrics annotations" },
+        { "agent": "oracle", "task": "assess observability gaps, retention vs storage cost trade-offs, SLO feasibility for uncovered services, and recommend sampling strategies for high-volume namespaces" },
+        { "agent": "fixer", "task": "implement missing ServiceMonitors, PrometheusRules, GrafanaDashboard ConfigMaps, log shipping configs (Promtail/Alloy), and retention policies", "require_approval": true },
+        { "agent": "designer", "task": "update operational runbooks, create incident response timelines linked to dashboards, and generate a monitoring maturity scorecard" }
+      ]
     }
   },
 
@@ -268,6 +291,38 @@
       "args": ["-y", "@controlplane/flux-mcp-server"],
       "description": "Official Flux MCP. Kustomization/HelmRelease status, reconciliation errors, dependency diagrams, root cause analysis.",
       "read_only": true
+    },
+
+    "prometheus-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@prometheus-community/mcp-server"],
+      "env": { "PROMETHEUS_URL": "http://prometheus.monitoring:9090" },
+      "description": "Prometheus query and management MCP. Run instant/range queries, check alert rules, list targets, and explore metric metadata via PromQL."
+    },
+    "grafana-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@grafana/mcp-server"],
+      "env": {
+        "GRAFANA_URL": "http://grafana.monitoring:3000",
+        "GRAFANA_API_KEY": "${GRAFANA_API_KEY}"
+      },
+      "description": "Grafana API MCP. Create, read, update, and delete dashboards, datasources, folders, and alerts. Manage dashboard versions and annotations."
+    },
+    "loki-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@loki/mcp-server"],
+      "env": { "LOKI_URL": "http://loki.monitoring:3100" },
+      "description": "Loki log query MCP. Run LogQL queries for log analysis, tail live logs, explore label values, and check log volume across namespaces."
+    },
+    "opentelemetry-mcp": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@opentelemetry/mcp-server"],
+      "env": { "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otel-collector.monitoring:4318" },
+      "description": "OpenTelemetry MCP. Query trace data with TraceQL, inspect span attributes, analyze service dependency graphs, and configure trace sampling rules."
     }
   },
 
@@ -315,6 +370,7 @@
     "oracle": { "max_cost_per_session": 3.00, "escalate_to": "opencode-go/glm-5.1" },
     "fixer": { "max_cost_per_session": 1.50, "escalate_to": "opencode-go/kimi-k2.6" },
     "designer": { "max_cost_per_session": 0.50, "escalate_to": "opencode-go/qwen3.6-plus" },
+    "observer": { "max_cost_per_session": 0.50, "escalate_to": "opencode-go/kimi-k2.6" },
     "council": { "max_cost_per_session": 6.00, "escalate_to": "opencode-go/kimi-k2.6" }
   },
 

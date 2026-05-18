@@ -47,7 +47,29 @@
 
 ---
 
-### 1.4 MCPs Evaluated but Not Included
+### 1.4 Observability
+
+| MCP | Install | Why Include | Caveats |
+|-----|---------|-------------|---------|
+| **prometheus-mcp** | `npx -y @prometheus-community/mcp-server` | Query Prometheus metrics with PromQL (instant + range queries), inspect alert rules and targets, explore metric metadata. Foundation for any observability workflow. | Requires `PROMETHEUS_URL` env var. For Thanos, point to Thanos Query frontend. Read-only by design. |
+| **grafana-mcp** | `npx -y @grafana/mcp-server` | Full Grafana API: create/update dashboards, manage datasources and folders, configure alerts, version dashboards. Essential for dashboard-as-code workflows. | Requires `GRAFANA_URL` + `GRAFANA_API_KEY`. Service Account token with `Viewer` or `Editor` role depending on write needs. |
+| **loki-mcp** | `npx -y @loki/mcp-server` | Run LogQL queries for operational debugging, tail live logs across namespaces, explore label values and log volume. Complements prometheus-mcp for root cause analysis. | Requires `LOKI_URL` env var. Large log ranges may be slow; use time-bounded queries. |
+| **opentelemetry-mcp** | `npx -y @opentelemetry/mcp-server` | TraceQL queries, span attribute inspection, service dependency graphs, sampling rule configuration. Critical for distributed tracing in microservice architectures. | Requires OTLP endpoint. For homelabs, use the OpenTelemetry Collector as a proxy. Trace storage can be expensive — set sane sampling rates. |
+
+**Recommendation:** Install all four for a complete metrics-logs-traces observability stack. If resources are constrained, start with prometheus-mcp + loki-mcp (metrics + logs coverage), then add grafana-mcp and opentelemetry-mcp as your homelab matures.
+
+**Environment variables to export:**
+```bash
+export PROMETHEUS_URL="http://prometheus.monitoring:9090"
+export GRAFANA_URL="http://grafana.monitoring:3000"
+export GRAFANA_API_KEY="glsa_xxxxxxxxxxxx"  # Grafana Service Account token
+export LOKI_URL="http://loki.monitoring:3100"
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://otel-collector.monitoring:4318"
+```
+
+---
+
+### 1.5 MCPs Evaluated but Not Included
 
 | MCP | Reason for Exclusion |
 |-----|---------------------|
@@ -125,6 +147,13 @@ export ARGOCD_AUTH_TOKEN="your-argocd-token"
 
 # Terraform / HCP (if applicable)
 export TFE_TOKEN="your-tfe-token"
+
+# Observability (required for Observer agent)
+export PROMETHEUS_URL="http://prometheus.monitoring:9090"
+export GRAFANA_URL="http://grafana.monitoring:3000"
+export GRAFANA_API_KEY="glsa_xxxxxxxxxxxx"
+export LOKI_URL="http://loki.monitoring:3100"
+export OTEL_EXPORTER_OTLP_ENDPOINT="http://otel-collector.monitoring:4318"
 ```
 
 ---
